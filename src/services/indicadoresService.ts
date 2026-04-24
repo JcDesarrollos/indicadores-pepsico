@@ -34,7 +34,6 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
         FROM PSC_PERSONAL
         WHERE PR_ACTIVO = 'SI'
     `);
-
     const nodes = rows as (PersonalNode & { idCargo: number })[];
     if (nodes.length === 0) return [];
 
@@ -49,10 +48,31 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
 
     nodes.forEach(node => {
         if (node.idJefe !== null && map.has(node.idJefe)) {
-            map.get(node.idJefe)!.children!.push(node);
+            const jefe = map.get(node.idJefe)!;
+
+            // Si un Guarda depende de un Supervisor, insertamos Operador Fantasma para bajar nivel
+            if (node.idCargo === 2 && jefe.idCargo === 4) {
+                let ghostOp = jefe.children?.find(c => c.esFantasma && c.idCargo === 3);
+                if (!ghostOp) {
+                    ghostOp = {
+                        id: -777 - jefe.id,
+                        nombre: 'OPERADORES DE MEDIOS',
+                        cargo: 'MEDIOS Y MONITOREO',
+                        genero: '',
+                        idJefe: jefe.id,
+                        activo: 'SI',
+                        idCargo: 3,
+                        esFantasma: true,
+                        children: []
+                    };
+                    jefe.children!.push(ghostOp);
+                }
+                ghostOp.children!.push(node);
+            } else {
+                jefe.children!.push(node);
+            }
         } else {
-            // Es raíz o huérfano
-            if (node.idCargo === 1) { // Admin es raíz real
+            if (node.idCargo === 1) {
                 roots.push(node);
             } else {
                 orphans.push(node);
@@ -60,42 +80,51 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
         }
     });
 
-    // Si no hay admins, los primeros de la lista son raíces (fallback)
+    // Limitar hijos Guardas a 10 en todo el mapa para evitar saturación
+    map.forEach(node => {
+        if (node.children && node.children.length > 10) {
+            const guards = node.children.filter(c => c.idCargo === 2);
+            const nonGuards = node.children.filter(c => c.idCargo !== 2);
+            if (guards.length > 10) {
+                node.children = [...nonGuards, ...guards.slice(0, 10)];
+            }
+        }
+    });
+
     if (roots.length === 0 && orphans.length > 0) {
         roots.push(orphans.shift()!);
     }
 
-    // Normalizar niveles de Huérfanos
-    // Queremos que los Guardas estén en el nivel 2, Supervisores en el nivel 1
+    // Normalizar huérfanos
     if (roots.length > 0) {
         const mainRoot = roots[0];
-
-        // Agrupar huérfanos por cargo
         const orphanSupervisors = orphans.filter(o => o.idCargo === 4);
-        const orphanGuards = orphans.filter(o => o.idCargo !== 4 && o.idCargo !== 1);
+        const orphanOperators = orphans.filter(o => o.idCargo === 3);
+        const orphanGuards = orphans.filter(o => o.idCargo === 2);
 
-        // Los supervisores huérfanos van directo al admin (nivel 1)
-        if (orphanSupervisors.length > 0) {
-            mainRoot.children!.push(...orphanSupervisors);
-        }
+        if (orphanSupervisors.length > 0) mainRoot.children!.push(...orphanSupervisors);
 
-        // Los guardas huérfanos necesitan un nodo fantasma en el nivel 1
-        if (orphanGuards.length > 0) {
-            const ghostSupervisor: PersonalNode = {
-                id: -999, // ID negativo para fantasma
-                nombre: 'OTROS COLABORADORES',
-                cargo: 'PERSONAL SIN ASIGNACIÓN DIRECTA',
-                genero: '',
-                idJefe: mainRoot.id,
-                activo: 'SI',
-                esFantasma: true,
-                children: orphanGuards
+        if (orphanOperators.length > 0) {
+            const ghostSup: PersonalNode = {
+                id: -999, nombre: 'SUPERVISIÓN OPERATIVA', cargo: 'SUPERVISOR GHOST', genero: '',
+                idJefe: mainRoot.id, activo: 'SI', esFantasma: true, children: orphanOperators
             };
-            mainRoot.children!.push(ghostSupervisor);
+            mainRoot.children!.push(ghostSup);
         }
-    } else if (orphans.length > 0) {
-        // Fallback total si no hay estructura
-        roots.push(...orphans.slice(0, 50));
+
+        if (orphanGuards.length > 0) {
+            const limitedOrphanGuards = orphanGuards.slice(0, 10);
+            const ghostSup: PersonalNode = {
+                id: -998, nombre: 'SUPERVISIÓN OPERATIVA', cargo: 'SUPERVISOR GHOST', genero: '',
+                idJefe: mainRoot.id, activo: 'SI', esFantasma: true, children: []
+            };
+            const ghostOp: PersonalNode = {
+                id: -888, nombre: 'MEDIOS Y MONITOREO', cargo: 'OPERADOR GHOST', genero: '',
+                idJefe: -998, activo: 'SI', esFantasma: true, children: limitedOrphanGuards
+            };
+            ghostSup.children!.push(ghostOp);
+            mainRoot.children!.push(ghostSup);
+        }
     }
 
     return roots;

@@ -51,9 +51,6 @@ export default function NovedadesModule() {
   };
 
   const filteredNovedades = novedades.filter(n =>
-    n.NO_DESCRIPCION?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    n.SE_NOMBRE?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    n.TN_NOMBRE?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     n.NO_CONSECUTIVO?.toString().includes(searchTerm)
   );
 

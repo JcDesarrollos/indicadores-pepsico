@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getNovedadesAction() {
     try {
-        const data = await eventosCriticosService.getNovedadesRecientes();
+        const data = await eventosCriticosService.getNovedadesRecientes(1000);
         return { success: true, data };
     } catch (error) {
         console.error("Error en getNovedadesAction:", error);
@@ -19,6 +19,7 @@ export async function toggleCriticoAction(id: number, currentStatus: string) {
         await eventosCriticosService.marcarComoCritico(id, newStatus);
         revalidatePath('/novedades');
         revalidatePath('/eventos-criticos');
+        revalidatePath('/seguridad-fisica');
         return { success: true, newStatus };
     } catch (error) {
         console.error("Error en toggleCriticoAction:", error);
