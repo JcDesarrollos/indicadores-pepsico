@@ -74,8 +74,8 @@ export async function getRotacionSedeMes(anio: number) {
       LEFT JOIN PSC_PERSONAL p ON (p.SE_IDSEDE_FK = s.SE_IDSEDE_PK OR p.PU_IDPUESTO_FK = pu.PU_IDPUESTO_PK)
       LEFT JOIN PSC_ROTACION r ON r.PR_IDPERSONAL_FK = p.PR_IDPERSONAL_PK AND YEAR(r.RO_FECHA) = ?
       WHERE s.SE_ACTIVO = 'SI' AND c.CI_ACTIVO = 'SI'
-      GROUP BY s.SE_NOMBRE, MONTH(r.RO_FECHA)
-      ORDER BY s.SE_NOMBRE, MONTH(r.RO_FECHA)
+      GROUP BY s.SE_NOMBRE, mes_num
+      ORDER BY s.SE_NOMBRE, mes_num
     `;
 
     const [rows] = await db.execute(query, [anio]) as [RowDataPacket[], any];
@@ -120,7 +120,7 @@ export async function getRotacionMotivos(anio: number) {
         COUNT(*) as cantidad
       FROM PSC_ROTACION
       WHERE YEAR(RO_FECHA) = ?
-      GROUP BY MONTH(RO_FECHA), RO_TIPO
+      GROUP BY mes, RO_TIPO
       ORDER BY MONTH(RO_FECHA)
     `;
 
