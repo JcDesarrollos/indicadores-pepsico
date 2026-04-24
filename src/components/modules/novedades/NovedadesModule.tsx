@@ -73,7 +73,7 @@ export default function NovedadesModule() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <Input 
-              placeholder="Buscar..." 
+              placeholder="Buscar por ID..." 
               className="pl-9 h-9 w-[250px] rounded-md bg-white dark:bg-slate-900 border-slate-200 text-xs"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
