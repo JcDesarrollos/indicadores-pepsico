@@ -23,12 +23,12 @@ function cn(...inputs: ClassValue[]) {
 
 const MENU_ITEMS = [
   { id: 'dashboard', title: 'Inicio', icon: LayoutGrid, href: '/' },
-  { id: 'novedades', title: 'Novedades', icon: Bell, href: '/novedades' },
   { id: 'organigrama', title: 'Organigrama', icon: Users, href: '/organigrama' },
   { id: 'seguridad-fisica', title: 'Seguridad Física', icon: ShieldCheck, href: '/seguridad-fisica' },
   { id: 'visitas', title: 'Gestión de Visitas', icon: CalendarCheck, href: '/visitas' },
-  { id: 'eventos-criticos', title: 'Eventos Críticos', icon: AlertTriangle, href: '/eventos-criticos' },
   { id: 'rotacion', title: 'Gestión de Rotación', icon: UserMinus, href: '/rotacion' },
+  { id: 'eventos-criticos', title: 'Eventos Críticos', icon: AlertTriangle, href: '/eventos-criticos' },
+  { id: 'novedades', title: 'Novedades', icon: Bell, href: '/novedades' },
 ];
 
 interface SidebarProps {

@@ -140,10 +140,95 @@ export default function CronogramaVisitas({ initialData, allTareas, sedes, zonas
                 <div className="clear-both"></div>
             </div>
 
-            {/* AREA PRINCIPAL: TABLA + DASHBOARD LATERAL */}
-            <div className="relative h-[90dvh] flex bg-[#F8FAFC] overflow-hidden">
-                {/* TABLA CON SCROLL */}
-                <div className="flex-1 overflow-auto custom-scrollbar">
+            {/* AREA PRINCIPAL: TABLA (DESKTOP) + CARDS (MOBILE) */}
+            <div className="relative h-[90dvh] flex flex-col md:flex-row bg-[#F8FAFC] overflow-hidden">
+                
+                {/* VISTA MOBILE: LISTA DE TARJETAS */}
+                <div className="md:hidden flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                    <div className="bg-[#004B93] text-white p-4 rounded-2xl shadow-lg mb-6">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-[10px] font-black uppercase opacity-60">Cumplimiento Anual</p>
+                                <p className="text-3xl font-black">{cumplimientoTotal}%</p>
+                            </div>
+                            <TrendingUp size={32} className="text-[#39FF14]" />
+                        </div>
+                    </div>
+
+                    {filteredData.length === 0 ? (
+                        <div className="py-20 text-center opacity-30">
+                            <Search size={40} className="mx-auto mb-4" />
+                            <p className="text-xs font-black uppercase">No hay resultados</p>
+                        </div>
+                    ) : (
+                        filteredData.map(row => (
+                            <div key={row.idSede} className="bg-white border-2 border-slate-900 rounded-2xl overflow-hidden shadow-sm">
+                                <div className="bg-slate-900 text-white p-3 flex justify-between items-center">
+                                    <span className="text-[9px] font-black uppercase tracking-widest">{row.zona}</span>
+                                    <span className="bg-[#004B93] px-2 py-0.5 rounded text-[8px] font-black uppercase">SITE</span>
+                                </div>
+                                <div className="p-4">
+                                    <h4 className="text-sm font-black text-slate-800 uppercase mb-4">{row.site}</h4>
+                                    
+                                    <div className="space-y-4">
+                                        {visibleMonths.map(mesNum => {
+                                            const visitsInMonth = Array.from({ length: 4 }).flatMap((_, s) => row.plan[`M${mesNum}-S${s+1}`] || []);
+                                            if (visitsInMonth.length === 0) return null;
+
+                                            return (
+                                                <div key={mesNum} className="flex flex-col gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                                    <div className="flex justify-between items-center border-b border-slate-200 pb-2 mb-2">
+                                                        <span className="text-[10px] font-black uppercase text-indigo-600">{MESES[mesNum-1]} {currentAnio}</span>
+                                                        <span className="text-[9px] font-bold text-slate-400">{visitsInMonth.length} Visitas</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {Array.from({ length: 4 }).map((_, s) => {
+                                                            const visits = row.plan[`M${mesNum}-S${s+1}`] || [];
+                                                            if (visits.length === 0) return null;
+                                                            const isEjec = visits.some(v => v.estado === 'EJECUTADA');
+
+                                                            return (
+                                                                <button
+                                                                    key={s}
+                                                                    onClick={() => setSelectedCell({ row, visits })}
+                                                                    className={cn(
+                                                                        "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all active:scale-95 min-h-[60px]",
+                                                                        isEjec 
+                                                                            ? "bg-green-50 border-green-500 text-green-700" 
+                                                                            : "bg-blue-50 border-blue-500 text-blue-700"
+                                                                    )}
+                                                                >
+                                                                    <span className="text-[9px] font-black uppercase opacity-60">Semana {s+1}</span>
+                                                                    <span className="text-[11px] font-black underline">DETALLE</span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        
+                                        <button 
+                                            onClick={() => {
+                                                const mesSugerido = visibleMonths[0] || currentMes;
+                                                const d = new Date(currentAnio, mesSugerido - 1, 1);
+                                                setPlanningData({ sedeId: row.idSede, date: d.toISOString().split('T')[0] });
+                                                setIsPlanningOpen(true);
+                                            }}
+                                            className="w-full mt-4 py-4 bg-white border-2 border-dashed border-slate-300 rounded-xl text-[11px] font-black text-slate-500 uppercase tracking-widest hover:border-[#004B93] hover:text-[#004B93] transition-all min-h-[50px]"
+                                        >
+                                            + Programar Visita
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                    <div className="h-20"></div>
+                </div>
+
+                {/* VISTA DESKTOP: TABLA ORIGINAL */}
+                <div className="hidden md:block flex-1 overflow-auto custom-scrollbar">
                     <table className="border-collapse table-fixed bg-white min-w-max border-r border-slate-900 mb-20">
                         <thead className="sticky top-0 z-[150]">
                             <tr className="bg-slate-900 text-white h-10">
@@ -224,7 +309,7 @@ export default function CronogramaVisitas({ initialData, allTareas, sedes, zonas
                 </div>
 
                 {/* PANEL DE CUMPLIMIENTO (STICKY RIGHT) */}
-                <div className="w-48 bg-white border-l border-slate-900 flex flex-col shrink-0 font-sans shadow-[-10px_0_30px_rgba(0,0,0,0.1)] overflow-y-auto">
+                <div className="hidden lg:flex w-48 bg-white border-l border-slate-900 flex flex-col shrink-0 font-sans shadow-[-10px_0_30px_rgba(0,0,0,0.1)] overflow-y-auto">
                     <div className="p-4 border-b border-slate-900 bg-slate-900 text-white flex items-center gap-2">
                          <TrendingUp size={14} className="text-[#39FF14]" />
                          <span className="text-[10px] font-black uppercase tracking-widest">Cumplimiento</span>
@@ -258,14 +343,13 @@ export default function CronogramaVisitas({ initialData, allTareas, sedes, zonas
                             const perc = s.plan > 0 ? (s.ejec / s.plan) * 100 : 0;
                             const mesNum = idx + 1;
                             
-                            // Lógica de colores del usuario
                             let colorClass = "bg-slate-200 border-slate-300";
                             if (mesNum === currentMes) {
-                                colorClass = "bg-yellow-400 border-yellow-600"; // Mes Actual
+                                colorClass = "bg-yellow-400 border-yellow-600";
                             } else if (mesNum < currentMes && perc < 100) {
-                                colorClass = "bg-red-500 border-red-800 text-white"; // Pasado sin cumplimiento total
+                                colorClass = "bg-red-500 border-red-800 text-white";
                             } else if (perc === 100) {
-                                colorClass = "bg-green-500 border-green-800 text-white"; // Cumplimiento total
+                                colorClass = "bg-green-500 border-green-800 text-white";
                             }
 
                             return (

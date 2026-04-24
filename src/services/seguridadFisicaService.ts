@@ -45,6 +45,7 @@ export async function getSecurityDashboardData(): Promise<DashboardData> {
     JOIN PSC_CARGO_PERSONAL CP ON P.CP_IDCARGO_FK = CP.CP_IDCARGO_PK
     WHERE P.PR_ACTIVO = 'SI'
     GROUP BY CP.CP_NOMBRE
+    ORDER BY count ASC
   `);
 
   // 4. Distribución por modalidad de puesto

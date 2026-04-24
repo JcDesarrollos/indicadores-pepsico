@@ -135,70 +135,68 @@ export default function ChartsGrid({
   );
 
   const bottomCharts = (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
-      {/* Panel Dual: Género y Rotación */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm h-full flex overflow-hidden">
-         {/* Lado A: Balance de Género */}
-         <div className="flex-1 p-5 border-r border-slate-100 dark:border-slate-800 flex flex-col">
-            <h5 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6 border-l-2 border-pink-500 pl-3">
-               Balance de Género
-            </h5>
-            <div className="flex-1 flex flex-col justify-around gap-2">
-               {genderData.map((entry, i) => (
-                  <div key={i} className="flex items-center gap-3 p-2 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl">
-                     <div 
-                       className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm text-white"
-                       style={{ backgroundColor: entry.color }}
-                     >
-                        {entry.name === 'HOMBRE' ? <Man size={16} strokeWidth={3} /> : <Woman size={16} strokeWidth={3} />}
-                     </div>
-                     <div className="flex-1">
-                        <p className="text-[8px] font-black text-slate-400 uppercase leading-none mb-1">{entry.name}S</p>
-                        <div className="flex items-baseline gap-2">
-                           <span className="text-lg font-black text-slate-900 dark:text-white leading-none">{entry.value}</span>
-                           <span className="text-[8px] font-bold text-slate-400">{totalPersonnel > 0 ? ((entry.value / totalPersonnel) * 100).toFixed(0) : 0}%</span>
-                        </div>
-                     </div>
-                  </div>
-               ))}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+      {/* 1. Balance de Género */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+        <h5 className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest mb-6 border-l-2 border-pink-500 pl-3">
+          Balance de Género
+        </h5>
+        <div className="flex-1 flex flex-col justify-center gap-4">
+          {genderData.map((entry, i) => (
+            <div key={i} className="flex items-center gap-4 p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center shadow-sm text-white"
+                style={{ backgroundColor: entry.color }}
+              >
+                {entry.name === 'HOMBRE' ? <Man size={20} strokeWidth={3} /> : <Woman size={20} strokeWidth={3} />}
+              </div>
+              <div className="flex-1">
+                <p className="text-[9px] font-black text-slate-400 uppercase leading-none mb-1">{entry.name}S</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">{entry.value}</span>
+                  <span className="text-[10px] font-bold text-slate-400">{totalPersonnel > 0 ? ((entry.value / totalPersonnel) * 100).toFixed(0) : 0}%</span>
+                </div>
+              </div>
             </div>
-         </div>
-
-         {/* Lado B: Rotación Anual */}
-         <div className="flex-1 p-5 bg-slate-50/20 dark:bg-slate-900/50 flex flex-col">
-            <h5 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6 border-l-2 border-amber-500 pl-3">
-               Rotación {new Date().getFullYear()}
-            </h5>
-            <div className="flex-1 flex flex-col">
-               <div className="mb-4">
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Rotaciones</p>
-                  <span className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
-                     {rotationStats?.total || 0}
-                  </span>
-               </div>
-               
-               <div className="flex-1 space-y-2">
-                  {rotationStats?.byType.slice(0, 3).map((rot, i) => (
-                     <div key={i} className="flex justify-between items-center bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
-                        <span className="text-[8px] font-bold text-slate-500 uppercase truncate pr-2">{rot.name}</span>
-                        <span className="text-[10px] font-black text-amber-600 dark:text-amber-400">{rot.value}</span>
-                     </div>
-                  ))}
-               </div>
-            </div>
-         </div>
+          ))}
+        </div>
       </div>
 
+      {/* 2. Rotación Anual */}
       <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
-         <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-8 border-l-2 border-indigo-500 pl-3">Distribución por Cargos</h5>
-         <div className="space-y-5 flex-1">
+        <h5 className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest mb-6 border-l-2 border-amber-500 pl-3">
+          Rotación Anual ({new Date().getFullYear()})
+        </h5>
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="mb-6 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total Bajas/Movimientos</p>
+            <span className="text-4xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
+              {rotationStats?.total || 0}
+            </span>
+          </div>
+          
+          <div className="space-y-2">
+            {rotationStats?.byType.slice(0, 3).map((rot, i) => (
+              <div key={i} className="flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 px-3 py-2 rounded-xl">
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-400 uppercase truncate pr-2">{rot.name}</span>
+                <span className="text-sm font-black text-amber-600 dark:text-amber-400">{rot.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Distribución por Cargos */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+         <h5 className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest mb-8 border-l-2 border-indigo-500 pl-3">Distribución por Cargos</h5>
+         <div className="space-y-6 flex-1 flex flex-col justify-center">
             {roleData.slice(0, 5).map((role, i) => (
-               <div key={i} className="space-y-1.5">
+               <div key={i} className="space-y-2">
                   <div className="flex justify-between text-[10px] font-black uppercase tracking-tight">
                      <span className="text-slate-500">{role.role}</span>
                      <span className="text-slate-900 dark:text-white">{role.count}</span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                      <div 
                         className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
                         style={{ width: `${totalPersonnel > 0 ? (role.count / totalPersonnel) * 100 : 0}%` }}
