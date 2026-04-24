@@ -56,6 +56,20 @@ export async function upsertVisitaTarea(data: {
 }
 
 /**
+ * Elimina físicamente una tarea del catálogo
+ */
+export async function deleteVisitaTarea(id: number) {
+    try {
+        await db.execute(`DELETE FROM PSC_VISITA_TAREA WHERE VT_IDTAREA_PK = ?`, [id]);
+        revalidatePath('/visitas');
+        return { success: true };
+    } catch (error) {
+        console.error('Error al eliminar tarea:', error);
+        return { success: false, error: 'No se puede eliminar la tarea porque ya ha sido utilizada en visitas registradas.' };
+    }
+}
+
+/**
  * Registra la ejecución de una visita con sus resultados
  */
 export async function executeVisita(idVisita: number, resultados: {

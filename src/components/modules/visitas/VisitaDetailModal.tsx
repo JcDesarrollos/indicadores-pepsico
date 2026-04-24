@@ -20,7 +20,7 @@ export default function VisitaDetailModal({ visitas, onClose }: Props) {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[80vh]">
                 {/* Header */}
                 <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between bg-white">

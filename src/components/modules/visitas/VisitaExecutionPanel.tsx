@@ -3,18 +3,28 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-    X, Save, Plus, Camera, Trash2, Edit2,
-    CheckCircle2, AlertCircle, Image as ImageIcon,
-    ArrowLeft, Search, Activity
+    Save, Trash2, Edit2, CheckCircle2, ArrowLeft, Settings2, Loader2, Check,
+    PlusCircle, ListTodo, Camera, Activity
 } from 'lucide-react';
 import { Visita, VisitaTarea, VisitaResultado } from '@/types/visitas';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { cn } from '@/lib/utils';
-
-import { executeVisita, uploadEvidencePhotos } from '@/actions/visitasActions';
+import { upsertVisitaTarea, deleteVisitaTarea, executeVisita, uploadEvidencePhotos } from '@/actions/visitasActions';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
     visita: Visita & { site?: string, zona?: string, resultados?: VisitaResultado[] };
@@ -23,10 +33,10 @@ interface Props {
     onSuccess?: () => void;
 }
 
-export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuccess }: Props) {
+export default function VisitaExecutionPanel({ visita, allTareas: initialTareas, onClose, onSuccess }: Props) {
     const router = useRouter();
+    const [allTareas, setAllTareas] = useState<VisitaTarea[]>(initialTareas);
     const [resultados, setResultados] = useState<VisitaResultado[]>(visita.resultados || []);
-    const [searchTerm, setSearchTerm] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
 
@@ -36,7 +46,11 @@ export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuc
     const [tempImages, setTempImages] = useState<string[]>([]);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-    // Handlers para navegación
+    // Estado para Gestión de Catálogo
+    const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+    const [catalogLoading, setCatalogLoading] = useState(false);
+    const [catalogForm, setCatalogForm] = useState<{ id?: number, nombre: string }>({ nombre: '' });
+
     const handleClose = () => {
         if (onClose) onClose();
         else router.push('/visitas');
@@ -47,10 +61,8 @@ export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuc
         else router.push('/visitas');
     };
 
-    // Filtrar tareas disponibles
     const availableTareas = allTareas.filter(t =>
-        !resultados.some((r, idx) => r.idTarea === t.id && idx !== editingIndex) &&
-        t.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        !resultados.some((r, idx) => r.idTarea === t.id && idx !== editingIndex)
     );
 
     const resetForm = () => {
@@ -62,7 +74,6 @@ export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuc
 
     const handleAddTarea = () => {
         if (!selectedTareaId) return;
-
         const tarea = allTareas.find(t => t.id.toString() === selectedTareaId);
         if (!tarea) return;
 
@@ -81,19 +92,16 @@ export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuc
         } else {
             setResultados([nuevoResultado, ...resultados]);
         }
-
         resetForm();
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
-
         setIsUploading(true);
         try {
             const formData = new FormData();
             Array.from(files).forEach(f => formData.append('photos', f));
-
             const urlsRes = await uploadEvidencePhotos(formData);
             if (urlsRes.success && urlsRes.urls) {
                 setTempImages(prev => [...prev, ...urlsRes.urls!]);
@@ -114,13 +122,9 @@ export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuc
                 hallazgo: r.hallazgo || '',
                 imagenes: r.fotos || []
             }));
-
             const res = await executeVisita(visita.id, finalResultados);
-            if (res.success) {
-                handleSuccess();
-            } else {
-                alert(res.error || 'Error al guardar la visita');
-            }
+            if (res.success) handleSuccess();
+            else alert(res.error || 'Error al guardar la visita');
         } catch (error) {
             console.error('Error al guardar:', error);
         } finally {
@@ -141,224 +145,262 @@ export default function VisitaExecutionPanel({ visita, allTareas, onClose, onSuc
         if (editingIndex === idx) resetForm();
     };
 
+    const handleSaveCatalogItem = async () => {
+        if (!catalogForm.nombre) return;
+        setCatalogLoading(true);
+        const res = await upsertVisitaTarea({ ...catalogForm, activo: 'SI' });
+        if (res.success) {
+            setCatalogForm({ nombre: '' });
+            router.refresh();
+            if (catalogForm.id) {
+                setAllTareas(prev => prev.map(t => t.id === catalogForm.id ? { ...t, nombre: catalogForm.nombre } : t));
+            }
+        }
+        setCatalogLoading(false);
+    };
+
+    const handleDeleteCatalogItem = async (id: number) => {
+        if (!confirm('¿Seguro que deseas eliminar esta tarea del catálogo global?')) return;
+        setCatalogLoading(true);
+        const res = await deleteVisitaTarea(id);
+        if (res.success) {
+            setAllTareas(prev => prev.filter(t => t.id !== id));
+            router.refresh();
+        } else alert(res.error);
+        setCatalogLoading(false);
+    };
+
     return (
-        <div className="relative h-screen bg-[#F8FAFC] flex flex-col overflow-hidden animate-in fade-in duration-700">
-            {/* Header Superior Premium Blanco */}
-            <div className="h-24 shrink-0 border-b border-slate-200 bg-white flex items-center justify-between px-10 shadow-sm">
-                <div className="flex items-center gap-8">
-                    <button
-                        onClick={handleClose}
-                        className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-[#004B93] hover:text-white transition-all shadow-sm border border-slate-100"
-                    >
-                        <ArrowLeft size={24} />
-                    </button>
-                    <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Ejecución de Visita #{visita.id}</h2>
-                            <Badge className="bg-[#004B93] text-white border-none font-black text-[10px] px-2.5 rounded-full uppercase tracking-widest">En Proceso</Badge>
+        <div className="flex flex-col h-screen bg-background font-sans">
+            {/* Header Puro Shadcn Style */}
+            <header className="h-14 shrink-0 border-b flex items-center justify-between px-4">
+                <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="icon" onClick={handleClose}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-sm font-semibold tracking-tight">Ejecución #{visita.id}</h2>
+                            <Badge variant="default" className="text-[10px] h-4 px-1.5 leading-none">EN PROCESO</Badge>
                         </div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            {visita.site} <span className="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Registro de EVIDENCIAS
-                        </p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">{visita.site}</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6">
-                    <button
-                        onClick={handleClose}
-                        className="px-8 py-3 text-[11px] font-black text-slate-400 hover:text-slate-800 uppercase tracking-widest transition-all"
-                    >
-                        Cancelar
-                    </button>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={handleClose} className="text-[10px] font-bold">CANCELAR</Button>
                     <Button
+                        size="sm"
                         onClick={handleSave}
                         disabled={resultados.length === 0 || isSaving}
-                        className="bg-[#004B93] hover:bg-blue-900 text-white font-black text-[11px] uppercase tracking-widest px-10 h-14 rounded-2xl shadow-xl shadow-blue-900/10 gap-3"
+                        className="bg-primary text-primary-foreground font-bold text-[10px] gap-2 px-4"
                     >
-                        {isSaving ? 'Guardando...' : 'Finalizar Registro'}
-                        <Save size={18} />
+                        {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                        FINALIZAR REGISTRO
                     </Button>
                 </div>
-            </div>
+            </header>
 
             <div className="flex-1 flex overflow-hidden">
-                {/* LADO IZQUIERDO: Panel Blanco Limpio */}
-                <div className="w-[450px] h-full shrink-0 border-r border-slate-200 bg-white p-10 flex flex-col gap-8 shadow-2xl z-10">
-                    <div className="flex flex-col gap-2 border-b border-slate-50 pb-6">
-                        <h3 className="text-base font-black text-slate-800 uppercase tracking-tight flex items-center gap-3">
-                            <div className="p-2 bg-blue-50 rounded-xl text-[#004B93]">
-                                <Plus size={20} />
-                            </div>
-                            {editingIndex !== null ? 'Editar Registro' : 'Nueva Tarea'}
-                        </h3>
-                        <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Completa la información técnica.</p>
+                {/* LADO IZQUIERDO: Formulario de Registro */}
+                <aside className="w-[360px] border-r flex flex-col p-4 space-y-6 overflow-y-auto custom-scrollbar">
+                    <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs font-bold uppercase flex items-center gap-2">
+                                <Activity className="h-4 w-4 text-primary" />
+                                {editingIndex !== null ? 'Editar Hallazgo' : 'Registro de Hallazgo'}
+                            </h3>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => setIsCatalogOpen(true)}
+                            >
+                                <Settings2 className="h-3 w-3" />
+                            </Button>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">REGISTRO TÉCNICO DE SEGURIDAD</p>
                     </div>
 
-                    <div className="flex flex-col gap-6 overflow-y-auto pr-2">
-                        {/* Selector de Tareas */}
-                        <div className="flex flex-col gap-2.5">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tarea del Catálogo</label>
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                                <select
-                                    value={selectedTareaId}
-                                    onChange={(e) => setSelectedTareaId(e.target.value)}
-                                    className="w-full bg-slate-50 border-2 border-slate-100 text-slate-800 text-sm p-4 pl-12 rounded-2xl outline-none focus:border-[#004B93] focus:bg-white transition-all appearance-none font-bold"
-                                >
-                                    <option value="" className="text-slate-400">Seleccione una tarea...</option>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase text-muted-foreground">Tarea del Catálogo</Label>
+                            <Select value={selectedTareaId} onValueChange={setSelectedTareaId}>
+                                <SelectTrigger className="h-9 text-[11px] font-medium uppercase">
+                                    <SelectValue placeholder="Seleccione..." />
+                                </SelectTrigger>
+                                <SelectContent>
                                     {availableTareas.map(t => (
-                                        <option key={t.id} value={t.id}>{t.nombre}</option>
+                                        <SelectItem key={t.id} value={t.id.toString()} className="text-[11px] font-medium uppercase">
+                                            {t.nombre}
+                                        </SelectItem>
                                     ))}
-                                </select>
-                            </div>
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        {/* Hallazgo / Observaciones */}
-                        <div className="flex flex-col gap-2.5">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Hallazgo / Comentario Técnico</label>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase text-muted-foreground">Hallazgo Detectado</Label>
                             <Textarea
                                 value={currentHallazgo}
                                 onChange={(e) => setCurrentHallazgo(e.target.value)}
-                                placeholder="Escribe aquí los detalles encontrados..."
-                                className="bg-slate-50 border-2 border-slate-100 text-slate-800 text-sm min-h-[120px] rounded-2xl focus:border-[#004B93] focus:bg-white transition-all font-medium placeholder:text-slate-300"
+                                placeholder="Escriba los detalles aquí..."
+                                className="min-h-[120px] text-[11px] placeholder:text-muted-foreground/50 resize-none focus-visible:ring-primary"
                             />
                         </div>
 
-                        {/* Evidencias (Imágenes) */}
-                        <div className="flex flex-col gap-2.5">
-                            <div className="flex items-center justify-between">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Evidencias Fotográficas</label>
-                                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">{tempImages.length} archivos</span>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase text-muted-foreground">Evidencias ({tempImages.length}/6)</Label>
+                            <div className="grid grid-cols-3 gap-2">
                                 {tempImages.map((src, idx) => (
-                                    <div key={idx} className="aspect-square relative rounded-2xl overflow-hidden group border-2 border-slate-100">
-                                        <img src={src} className="w-full h-full object-cover" alt={`evidencia-${idx}`} />
-                                        <button
-                                            onClick={() => {
-                                                setTempImages(prev => prev.filter((_, i) => i !== idx));
-                                            }}
-                                            className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white"
+                                    <div key={idx} className="aspect-square relative rounded border group overflow-hidden bg-muted">
+                                        <img src={src} className="w-full h-full object-cover" alt="" />
+                                        <Button
+                                            variant="destructive"
+                                            size="icon"
+                                            onClick={() => setTempImages(prev => prev.filter((_, i) => i !== idx))}
+                                            className="absolute inset-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity rounded-none"
                                         >
-                                            <Trash2 size={24} />
-                                        </button>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 ))}
                                 {tempImages.length < 6 && (
-                                    <label className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:text-[#004B93] hover:border-[#004B93] transition-all cursor-pointer hover:bg-blue-50/50 group">
-                                        <div className="p-3 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform">
-                                            <Camera size={24} />
-                                        </div>
-                                        <span className="text-[9px] font-black uppercase mt-2">Cargar</span>
+                                    <label className="aspect-square border border-dashed rounded flex flex-col items-center justify-center text-muted-foreground hover:bg-muted cursor-pointer transition-colors group">
+                                        <Camera className="h-4 w-4 mb-1 group-hover:scale-110 transition-transform" />
+                                        <span className="text-[8px] font-bold">FOTO</span>
                                         <input type="file" multiple accept="image/*" className="hidden" onChange={handleFileUpload} />
                                     </label>
                                 )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* ACCIONES FIJAS AL FINAL DEL PANEL */}
-                    <div className="flex flex-col gap-2 mt-auto pt-6 border-t border-slate-50">
-                        <Button
-                            onClick={handleAddTarea}
-                            disabled={!selectedTareaId || isUploading}
-                            className="w-full h-14 bg-[#004B93] hover:bg-blue-900 text-white font-black text-[11px] uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/10"
-                        >
-                            {isUploading ? 'Procesando...' : editingIndex !== null ? 'Actualizar Registro' : 'Añadir a la Lista'}
-                        </Button>
+                        <Separator />
 
-                        {editingIndex !== null && (
-                            <button
-                                onClick={resetForm}
-                                className="py-2 text-[10px] font-black text-slate-400 uppercase hover:text-slate-800 transition-colors"
+                        <div className="space-y-2">
+                            <Button
+                                className="w-full h-9 font-bold text-[10px] uppercase tracking-wider"
+                                onClick={handleAddTarea}
+                                disabled={!selectedTareaId || isUploading}
                             >
-                                Cancelar Edición
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* LADO DERECHO: Resumen */}
-                <div className="flex-1 bg-slate-50/30 p-10 overflow-hidden flex flex-col gap-8">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-6">
-                        <div className="flex flex-col gap-1.5">
-                            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Tareas Registradas</h3>
-                            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <Activity size={12} className="text-[#004B93]" />
-                                Total: {resultados.length} items en revisión
-                            </p>
-                        </div>
-                        <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100">
-                            <Search className="text-slate-300" size={24} />
+                                {isUploading ? 'PROCESANDO...' : editingIndex !== null ? 'ACTUALIZAR REGISTRO' : 'AÑADIR A LA LISTA'}
+                            </Button>
+                            {editingIndex !== null && (
+                                <Button variant="ghost" className="w-full h-8 text-[10px] text-muted-foreground" onClick={resetForm}>
+                                    CANCELAR EDICIÓN
+                                </Button>
+                            )}
                         </div>
                     </div>
+                </aside>
 
-                    <ScrollArea className="flex-1 pr-6">
-                        <div className="flex flex-col gap-6">
+                {/* LADO DERECHO: Lista de Registros */}
+                <main className="flex-1 bg-muted/20 flex flex-col p-6 overflow-hidden">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <ListTodo className="h-4 w-4 text-primary" />
+                            <h3 className="text-sm font-bold uppercase tracking-tight">Hallazgos Registrados</h3>
+                        </div>
+                        <Badge variant="outline" className="bg-background font-bold text-[10px]">{resultados.length} ITEMS</Badge>
+                    </div>
+
+                    <ScrollArea className="flex-1">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-20">
                             {resultados.map((res, idx) => (
-                                <div
-                                    key={idx}
-                                    className="p-8 rounded-[2.5rem] bg-white border border-slate-100 flex flex-col gap-6 group hover:border-[#004B93] hover:shadow-2xl hover:shadow-blue-500/5 transition-all w-full min-w-0 overflow-hidden"
-                                >
-                                    <div className="flex items-start justify-between gap-6 w-full overflow-hidden">
-                                        <div className="flex items-start gap-6 flex-1 min-w-0">
-                                            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-[#004B93] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:rotate-3">
-                                                <CheckCircle2 size={28} />
+                                <Card key={idx} className="group border shadow-sm hover:border-primary transition-colors">
+                                    <CardHeader className="p-3 border-b bg-background flex flex-row items-center justify-between space-y-0">
+                                        <div className="flex items-center gap-2 min-w-0 pr-2">
+                                            <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
+                                            <span className="text-[10px] font-bold uppercase truncate">{res.nombreTarea}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleEdit(idx)}><Edit2 className="h-3 w-3" /></Button>
+                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDelete(idx)}><Trash2 className="h-3 w-3" /></Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-3 space-y-3">
+                                        <p className="text-[10px] text-muted-foreground font-medium uppercase leading-normal break-words whitespace-pre-wrap">
+                                            {res.hallazgo || 'Sin observaciones registradas.'}
+                                        </p>
+                                        {res.fotos && res.fotos.length > 0 && (
+                                            <div className="flex gap-1.5 flex-wrap">
+                                                {res.fotos.map((foto, fIdx) => (
+                                                    <div key={fIdx} className="w-10 h-10 rounded border bg-background overflow-hidden shadow-xs hover:scale-110 transition-transform">
+                                                        <img src={foto} className="w-full h-full object-cover" alt="" />
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <div className="flex flex-col gap-1.5 min-w-0 flex-1 overflow-hidden">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-lg font-black text-slate-800 uppercase tracking-tight break-all">{res.nombreTarea}</span>
-                                                </div>
-                                                <p className="text-sm text-slate-500 font-medium leading-relaxed break-all">
-                                                    {res.hallazgo || 'Tarea registrada sin hallazgos específicos.'}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => handleEdit(idx)}
-                                                className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#004B93] rounded-xl transition-all shadow-sm bg-slate-50"
-                                            >
-                                                <Edit2 size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(idx)}
-                                                className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-red-500 rounded-xl transition-all shadow-sm bg-slate-50"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {res.fotos && res.fotos.length > 0 && (
-                                        <div className="flex gap-3 flex-wrap ml-20">
-                                            {res.fotos.map((foto, fIdx) => (
-                                                <div key={fIdx} className="w-24 h-24 rounded-[1.25rem] overflow-hidden border-2 border-slate-50 shadow-sm hover:scale-110 transition-transform cursor-pointer">
-                                                    <img src={foto} className="w-full h-full object-cover" alt={`evidencia-${fIdx}`} />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
                             ))}
 
                             {resultados.length === 0 && (
-                                <div className="py-24 flex flex-col items-center justify-center text-center gap-8 opacity-20">
-                                    <div className="w-32 h-32 bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
-                                        <Plus size={64} />
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <span className="text-2xl font-black text-slate-800 uppercase tracking-tighter">Sin registros</span>
-                                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Empieza añadiendo tareas del catálogo</p>
-                                    </div>
+                                <div className="col-span-full h-48 border border-dashed rounded flex flex-col items-center justify-center opacity-40">
+                                    <Activity className="h-8 w-8 text-muted-foreground mb-2" />
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">SIN REGISTROS TÉCNICOS</p>
                                 </div>
                             )}
                         </div>
                     </ScrollArea>
-                </div>
+                </main>
             </div>
+
+            {/* MODAL GESTIÓN CATÁLOGO - PURE SHADCN */}
+            <Dialog open={isCatalogOpen} onOpenChange={setIsCatalogOpen}>
+                <DialogContent className="max-w-md p-0 overflow-hidden outline-none">
+                    <DialogHeader className="p-4 border-b">
+                        <div className="flex items-center gap-2">
+                            <Settings2 className="h-4 w-4" />
+                            <DialogTitle className="text-sm font-bold uppercase tracking-tight">Catálogo Global</DialogTitle>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="p-4 space-y-6">
+                        <div className="space-y-3">
+                            <Label className="text-[10px] font-bold text-muted-foreground uppercase">{catalogForm.id ? 'Modificar' : 'Nuevo'}</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    value={catalogForm.nombre}
+                                    onChange={e => setCatalogForm(prev => ({ ...prev, nombre: e.target.value.toUpperCase() }))}
+                                    className="h-8 text-[11px]"
+                                />
+                                <Button
+                                    size="sm"
+                                    onClick={handleSaveCatalogItem}
+                                    disabled={catalogLoading || !catalogForm.nombre}
+                                    className="h-8 px-4 font-bold text-[10px]"
+                                >
+                                    {catalogForm.id ? 'UPDATE' : 'ADD'}
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold text-muted-foreground uppercase">Tareas ({allTareas.length})</Label>
+                            <ScrollArea className="h-60 rounded border p-2 bg-muted/10">
+                                <div className="space-y-1">
+                                    {allTareas.map(t => (
+                                        <div key={t.id} className="flex items-center justify-between p-2 hover:bg-muted rounded transition-colors group">
+                                            <span className="text-[10px] font-semibold text-muted-foreground uppercase truncate pr-2">{t.nombre}</span>
+                                            <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCatalogForm({ id: t.id, nombre: t.nombre })}><Edit2 className="h-3 w-3" /></Button>
+                                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleDeleteCatalogItem(t.id)}><Trash2 className="h-3 w-3" /></Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+            `}</style>
         </div>
     );
 }

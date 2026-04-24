@@ -45,7 +45,7 @@ export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess, init
 
     return (
         <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+            <DialogContent className="max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl z-[1000]">
                 <DialogHeader className="px-8 py-6 border-b border-slate-50 bg-white">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-[#004B93]/5 text-[#004B93] rounded-2xl flex items-center justify-center border border-[#004B93]/10">
