@@ -4,7 +4,7 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-USE RENOA_PEPSICO;
+-- USE RENOA_PEPSICO; -- Eliminado para usar conexión actual o dejar que el motor decida
 
 -- Limpieza agresiva de todas las posibles tablas antiguas
 DROP TABLE IF EXISTS PSC_VISITA_IMAGEN;

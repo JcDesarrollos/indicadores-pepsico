@@ -3,6 +3,7 @@
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { VisitaEstado } from '@/types/visitas';
+import { uploadToSpaces, deleteFromSpaces } from '@/lib/s3';
 
 /**
  * Registra una nueva planeación de visita
@@ -72,7 +73,17 @@ export async function executeVisita(idVisita: number, resultados: {
             WHERE VI_IDVISITA_PK = ?
         `, [idVisita]);
 
-        // 2. Limpiar resultados previos (Borrado en Cascada para imágenes)
+        // 2. Limpiar resultados previos (Borrado Físico en la nube + Borrado en Cascada en DB)
+        const [oldImages]: any = await connection.execute(`
+            SELECT VIM_URL FROM PSC_VISITA_IMAGEN 
+            JOIN PSC_VISITA_DETALLE ON PSC_VISITA_IMAGEN.VD_IDDETALLE_FK = PSC_VISITA_DETALLE.VD_IDDETALLE_PK
+            WHERE PSC_VISITA_DETALLE.VI_IDVISITA_FK = ?
+        `, [idVisita]);
+
+        for (const img of oldImages) {
+            await deleteFromSpaces(img.VIM_URL);
+        }
+
         await connection.execute(`
             DELETE FROM PSC_VISITA_DETALLE WHERE VI_IDVISITA_FK = ?
         `, [idVisita]);
@@ -106,7 +117,6 @@ export async function executeVisita(idVisita: number, resultados: {
     }
 }
 
-import { uploadToSpaces } from '@/lib/s3';
 
 /**
  * Acción para subir múltiples imágenes de evidencia a la nube (DigitalOcean Spaces)
@@ -129,5 +139,40 @@ export async function uploadEvidencePhotos(formData: FormData) {
     } catch (error) {
         console.error('Error al subir fotos:', error);
         return { success: false, error: 'Error al procesar imágenes' };
+    }
+}
+
+/**
+ * Elimina una visita completa y todas sus imágenes asociadas de la nube
+ */
+export async function deleteVisita(idVisita: number) {
+    const connection = await db.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        // 1. Buscar todas las URLs de imágenes de esta visita
+        const [images]: any = await connection.execute(`
+            SELECT VIM_URL FROM PSC_VISITA_IMAGEN 
+            JOIN PSC_VISITA_DETALLE ON PSC_VISITA_IMAGEN.VD_IDDETALLE_FK = PSC_VISITA_DETALLE.VD_IDDETALLE_PK
+            WHERE PSC_VISITA_DETALLE.VI_IDVISITA_FK = ?
+        `, [idVisita]);
+
+        // 2. Borrar de la nube
+        for (const img of images) {
+            await deleteFromSpaces(img.VIM_URL);
+        }
+
+        // 3. Borrar de la DB (El CASCADE se encarga de detalles e imágenes en DB)
+        await connection.execute('DELETE FROM PSC_VISITA WHERE VI_IDVISITA_PK = ?', [idVisita]);
+
+        await connection.commit();
+        revalidatePath('/visitas');
+        return { success: true };
+    } catch (error) {
+        await connection.rollback();
+        console.error('Error al eliminar visita:', error);
+        return { success: false, error: 'Error al eliminar la visita y sus evidencias' };
+    } finally {
+        connection.release();
     }
 }

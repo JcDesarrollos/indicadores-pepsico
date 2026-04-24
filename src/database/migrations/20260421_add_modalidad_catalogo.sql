@@ -4,7 +4,7 @@
 --  FECHA: 2026-04-21
 -- ===================================================
 
-USE RENOA_PEPSICO;
+-- USE RENOA_PEPSICO; -- Eliminado para usar conexión actual o dejar que el motor decida
 
 -- 1. Crear tabla de catálogo de modalidades
 CREATE TABLE IF NOT EXISTS PSC_MODALIDAD_PUESTO (
@@ -23,16 +23,14 @@ INSERT IGNORE INTO PSC_MODALIDAD_PUESTO (MP_NOMBRE) VALUES
 ('L-S 17:00 a 05:00');
 
 -- 3. Agregar el campo de FK a la tabla de puestos
-ALTER TABLE PSC_PUESTO ADD COLUMN IF NOT EXISTS MP_IDMODALIDAD_FK INT;
+ALTER TABLE PSC_PUESTO ADD COLUMN MP_IDMODALIDAD_FK INT;
 
 -- 4. Migrar datos existentes (intento de matching por texto)
 -- Nota: Como los strings pueden no coincidir exactamente con los anteriores, 
 -- se recomienda mapear manualmente si es necesario o dejar que el sistema asigne los nuevos.
 UPDATE PSC_PUESTO P
-JOIN PSC_MODALIDAD_PUESTO M ON P.PU_MODALIDAD = M.MP_NOMBRE
+JOIN PSC_MODALIDAD_PUESTO M ON P.PU_MODALIDAD = M.MP_NOMBRE COLLATE utf8mb4_unicode_ci
 SET P.MP_IDMODALIDAD_FK = M.MP_IDMODALIDAD_PK;
 
--- 5. Agregar la restricción de llave foránea
 ALTER TABLE PSC_PUESTO 
-ADD CONSTRAINT FK_PU_MODALIDAD 
-FOREIGN KEY (MP_IDMODALIDAD_FK) REFERENCES PSC_MODALIDAD_PUESTO(MP_IDMODALIDAD_PK);
+ADD FOREIGN KEY (MP_IDMODALIDAD_FK) REFERENCES PSC_MODALIDAD_PUESTO(MP_IDMODALIDAD_PK);

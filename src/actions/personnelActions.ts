@@ -113,6 +113,38 @@ export async function updatePersonnel(id: number, data: {
     }
 }
 
+/**
+ * Elimina un registro de personal y su foto asociada de la nube
+ */
+export async function deletePersonnel(id: number) {
+    try {
+        // 1. Obtener la URL de la foto actual para borrarla de la nube
+        const [rows]: any = await db.query(
+            'SELECT PR_FOTO_URL FROM PSC_PERSONAL WHERE PR_IDPERSONAL_PK = ?',
+            [id]
+        );
+
+        if (rows && rows.length > 0 && rows[0].PR_FOTO_URL) {
+            await deleteFromSpaces(rows[0].PR_FOTO_URL);
+        }
+
+        // 2. Eliminar de la base de datos
+        // Nota: Si hay registros en PSC_ROTACION o PSC_VISITA, el motor impedirá 
+        // borrarlo a menos que se use soft-delete o cascada. 
+        // Aquí asumimos limpieza o lógica de negocio ya definida.
+        await db.execute('DELETE FROM PSC_PERSONAL WHERE PR_IDPERSONAL_PK = ?', [id]);
+
+        revalidatePath('/organigrama');
+        return { success: true };
+    } catch (error: any) {
+        console.error('Error deleting personnel:', error);
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return { success: false, error: 'No se puede eliminar: El colaborador tiene historial de rotación o visitas.' };
+        }
+        return { success: false, error: 'Error al eliminar el personal' };
+    }
+}
+
 export async function createPersonnel(data: { 
     nombre: string, 
     cargo: string, 
