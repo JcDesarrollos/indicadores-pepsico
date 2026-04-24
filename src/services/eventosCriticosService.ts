@@ -59,7 +59,7 @@ export const eventosCriticosService = {
       WHERE S.SE_ACTIVO = 'SI'
       ORDER BY (AÑO1_COUNT + AÑO2_COUNT) DESC, S.SE_NOMBRE ASC
     `;
-    
+
     const [rows] = await db.execute<RowDataPacket[]>(sql, [anio1, anio2]);
     return rows as ComparativaSede[];
   },
@@ -98,7 +98,7 @@ export const eventosCriticosService = {
       sql += ` AND YEAR(N.NO_FECHA_HORA) = ?`;
       params.push(anio);
     }
-    
+
     if (sedeNombre) {
       sql += ` AND S.SE_NOMBRE = ?`;
       params.push(sedeNombre);
@@ -163,7 +163,7 @@ export const eventosCriticosService = {
       ORDER BY N.NO_FECHA_HORA DESC
       LIMIT ?
     `;
-    const [rows] = await db.execute<RowDataPacket[]>(sql, [limit]);
+    const [rows] = await db.query<RowDataPacket[]>(sql, [limit]);
     return rows;
   },
 
