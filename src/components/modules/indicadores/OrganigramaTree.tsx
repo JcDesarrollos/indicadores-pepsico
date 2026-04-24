@@ -12,33 +12,41 @@ interface Props {
 }
 
 export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) => {
-    const hasChildren = node.children && node.children.length > 0;
+    const realChildren = node.children?.filter(c => !c.esFantasma) || [];
+    const ghostChildren = node.children?.filter(c => c.esFantasma) || [];
 
-    const isGuardsBranch = node.children?.every(c => c.idCargo === 2);
-
-    const childrenGrid = hasChildren && (
+    const realChildrenGrid = realChildren.length > 0 && (
         <div className="relative flex flex-col items-center w-full mt-4">
-            {/* Línea horizontal superior (Oculta si es fantasma) */}
-            {!node.esFantasma && (
-                <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800"
-                    style={{
-                        left: node.children!.length > 1 ? '5%' : '50%',
-                        right: node.children!.length > 1 ? '5%' : '50%'
-                    }}></div>
-            )}
+            <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800" 
+                 style={{ 
+                     left: realChildren.length > 1 ? '10%' : '50%', 
+                     right: realChildren.length > 1 ? '10%' : '50%' 
+                 }}></div>
 
-            <div className={cn(
-                "flex flex-row justify-center gap-x-6 gap-y-12 px-2 pt-8",
-                isGuardsBranch ? "flex-wrap max-w-[1400px]" : "flex-nowrap"
-            )}>
-                {node.children!.map((child) => (
+            <div className="flex flex-row flex-nowrap justify-center gap-x-12 px-2 pt-8">
+                {realChildren.map((child) => (
                     <div key={child.id} className="relative flex-shrink-0 flex flex-col items-center">
-                        {/* Línea vertical individual (Oculta si el padre o el hijo es fantasma) */}
-                        {!node.esFantasma && !child.esFantasma && (
-                            <div className="absolute -top-8 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
-                        )}
+                        <div className="absolute -top-8 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
                         <OrganigramaNode node={child} level={level + 1} onEdit={onEdit} />
                     </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const ghostChildrenGrid = ghostChildren.length > 0 && (
+        <div className="mt-20 w-full flex flex-col items-center">
+            {/* Separador visual sutil si hay ramas reales arriba */}
+            {realChildren.length > 0 && (
+                <div className="w-48 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-12"></div>
+            )}
+            <div className="flex flex-row flex-wrap justify-center gap-x-6 gap-y-12 px-2 max-w-[1400px]">
+                {ghostChildren.map((ghost) => (
+                    <React.Fragment key={ghost.id}>
+                        {ghost.children?.map(c => (
+                            <OrganigramaNode key={c.id} node={c} level={level + 1} onEdit={onEdit} />
+                        ))}
+                    </React.Fragment>
                 ))}
             </div>
         </div>
@@ -47,8 +55,12 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
     if (node.esFantasma) {
         return (
             <div className="flex flex-col items-center">
-                {/* Nodo 100% invisible para asegurar que los hijos bajen de nivel sin conectores */}
-                {childrenGrid}
+                {/* Los fantasmas simplemente pasan sus hijos al grid */}
+                <div className="flex flex-row flex-wrap justify-center gap-6">
+                    {node.children?.map(c => (
+                        <OrganigramaNode key={c.id} node={c} level={level} onEdit={onEdit} />
+                    ))}
+                </div>
             </div>
         );
     }
@@ -128,14 +140,15 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
                         </div>
                     </div>
 
-                    {/* Conector Inferior */}
-                    {hasChildren && (
+                    {/* Conector Inferior (SÓLO PARA HIJOS REALES) */}
+                    {realChildren.length > 0 && (
                         <div className="w-px h-12 bg-slate-300 dark:bg-slate-700 mx-auto transition-colors group-hover:bg-[#004B93]"></div>
                     )}
                 </div>
             </div>
 
-            {childrenGrid}
+            {realChildrenGrid}
+            {ghostChildrenGrid}
         </div>
     );
 };
