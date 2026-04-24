@@ -1,0 +1,334 @@
+{
+    "select * from PSC_SEDE ps ": [
+        {
+            "SE_IDSEDE_PK": 1,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "ESPACIO PEPSICO",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 2,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PLANTA ALIMENTOS MARGARITA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 3,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PLANTA ALIMENTOS FUNZA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 4,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "AGRO CENTER STORAGE",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": "admin",
+            "SE_MODIFICEN": "2026-04-11 19:09:40"
+        },
+        {
+            "SE_IDSEDE_PK": 5,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "INNOVA MIXING CENTER",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 6,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PEC ALQUERIA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 7,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PEC MONTEVIDEO",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 8,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PEC SUBA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 9,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PEC TOBERIN",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 10,
+            "CI_IDCIUDAD_FK": 1,
+            "SE_NOMBRE": "PEC MOSQUERA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 12,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "PLANTA ALIMENTOS SABANETA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 13,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "DC. HUB ITAGUI",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 14,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "PEC BELLO",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 15,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "PEC PREMIUM",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 16,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "PEC RIO NEGRO",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 17,
+            "CI_IDCIUDAD_FK": 3,
+            "SE_NOMBRE": "DC BARRAQUILLA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 18,
+            "CI_IDCIUDAD_FK": 3,
+            "SE_NOMBRE": "PEC CARTAGENA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 19,
+            "CI_IDCIUDAD_FK": 3,
+            "SE_NOMBRE": "PEC SANTAMARTA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 20,
+            "CI_IDCIUDAD_FK": 3,
+            "SE_NOMBRE": "PEC MONTERIA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 21,
+            "CI_IDCIUDAD_FK": 4,
+            "SE_NOMBRE": "DC CALI",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 22,
+            "CI_IDCIUDAD_FK": 4,
+            "SE_NOMBRE": "DC. PEREIRA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 23,
+            "CI_IDCIUDAD_FK": 4,
+            "SE_NOMBRE": "PEC PALMIRA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 24,
+            "CI_IDCIUDAD_FK": 4,
+            "SE_NOMBRE": "PEC ARMENIA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 25,
+            "CI_IDCIUDAD_FK": 4,
+            "SE_NOMBRE": "PEC MANIZALES",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 26,
+            "CI_IDCIUDAD_FK": 4,
+            "SE_NOMBRE": "PEC IBAGUE",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 27,
+            "CI_IDCIUDAD_FK": 5,
+            "SE_NOMBRE": "DC BUCARAMANGA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "SISTEMA",
+            "SE_CREADOEN": "2025-11-11 09:52:32",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-11 09:52:32"
+        },
+        {
+            "SE_IDSEDE_PK": 29,
+            "CI_IDCIUDAD_FK": 7,
+            "SE_NOMBRE": "BOGOTA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2025-11-26 10:04:01",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-26 10:04:01"
+        },
+        {
+            "SE_IDSEDE_PK": 30,
+            "CI_IDCIUDAD_FK": 8,
+            "SE_NOMBRE": "PLANTA SOLEDAD",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2025-11-26 10:35:14",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2025-11-26 10:35:14"
+        },
+        {
+            "SE_IDSEDE_PK": 32,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "PEPSICO ALIMENTOS ANTIOQUIA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2026-02-04 00:37:12",
+            "SE_MODIFICPOR": "admin",
+            "SE_MODIFICEN": "2026-02-04 00:41:13"
+        },
+        {
+            "SE_IDSEDE_PK": 35,
+            "CI_IDCIUDAD_FK": 5,
+            "SE_NOMBRE": "PEC BUCARAMANGA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2026-04-08 15:38:38",
+            "SE_MODIFICPOR": "admin",
+            "SE_MODIFICEN": "2026-04-08 15:39:29"
+        },
+        {
+            "SE_IDSEDE_PK": 36,
+            "CI_IDCIUDAD_FK": 9,
+            "SE_NOMBRE": "PEC BUCARAMANGA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2026-04-08 15:40:09",
+            "SE_MODIFICPOR": "admin",
+            "SE_MODIFICEN": "2026-04-08 15:42:43"
+        },
+        {
+            "SE_IDSEDE_PK": 38,
+            "CI_IDCIUDAD_FK": 9,
+            "SE_NOMBRE": "DC BUCARAMANGA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2026-04-08 15:45:36",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2026-04-08 15:45:36"
+        },
+        {
+            "SE_IDSEDE_PK": 39,
+            "CI_IDCIUDAD_FK": 2,
+            "SE_NOMBRE": "PEREIRA",
+            "SE_ACTIVO": "SI",
+            "SE_CREADOPOR": "admin",
+            "SE_CREADOEN": "2026-04-12 09:31:27",
+            "SE_MODIFICPOR": null,
+            "SE_MODIFICEN": "2026-04-12 09:31:27"
+        }
+    ]
+}
