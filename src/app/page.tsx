@@ -26,7 +26,7 @@ const MENU_OPTIONS = [
   {
     id: 'seguridad-fisica',
     title: 'Seguridad Física',
-    description: 'Dashboard de pie de fuerza, sedes y puestos.',
+    description: 'Indicadores de pie de fuerza, sedes y puestos.',
     icon: ShieldCheck,
     color: 'text-indigo-600',
     borderColor: 'border-indigo-100',

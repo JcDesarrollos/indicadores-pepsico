@@ -21,7 +21,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const MENU_ITEMS = [
-  { id: 'dashboard', title: 'Dashboard', icon: LayoutGrid, href: '/' },
+  { id: 'dashboard', title: 'Inicio', icon: LayoutGrid, href: '/' },
   { id: 'organigrama', title: 'Organigrama', icon: Users, href: '/organigrama' },
   { id: 'seguridad-fisica', title: 'Seguridad Física', icon: ShieldCheck, href: '/seguridad-fisica' },
   { id: 'visitas', title: 'Gestión de Visitas', icon: CalendarCheck, href: '/visitas' },
