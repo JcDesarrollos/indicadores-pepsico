@@ -11,7 +11,8 @@ import {
   UserMinus,
   LayoutGrid,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Bell
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -22,6 +23,7 @@ function cn(...inputs: ClassValue[]) {
 
 const MENU_ITEMS = [
   { id: 'dashboard', title: 'Inicio', icon: LayoutGrid, href: '/' },
+  { id: 'novedades', title: 'Novedades', icon: Bell, href: '/novedades' },
   { id: 'organigrama', title: 'Organigrama', icon: Users, href: '/organigrama' },
   { id: 'seguridad-fisica', title: 'Seguridad Física', icon: ShieldCheck, href: '/seguridad-fisica' },
   { id: 'visitas', title: 'Gestión de Visitas', icon: CalendarCheck, href: '/visitas' },

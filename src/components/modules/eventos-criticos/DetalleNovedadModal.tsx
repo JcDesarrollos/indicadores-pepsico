@@ -48,7 +48,7 @@ export default function DetalleNovedadModal({ novedad, isOpen, onClose }: Detall
          Clonamos el estilo del modal de RENOA:
          Max-width basado en el viewport menos espacio lateral.
       */}
-      <DialogContent className="max-w-[calc(95vw-100px)] max-h-[95vh] w-full h-full overflow-hidden p-0 flex flex-col bg-gray-100 border-none shadow-2xl">
+      <DialogContent className="max-w-[calc(95vw-100px)] h-[90dvh] max-h-[90dvh] min-h-[90dvh] w-full overflow-hidden p-0 flex flex-col bg-gray-100 border-none shadow-2xl rounded-none">
         <DialogHeader className="py-1.5 px-3 border-b bg-white flex-shrink-0">
           <DialogTitle className="text-sm font-bold flex justify-between items-center pr-8">
             <span>Reporte de Novedad - Consecutivo {novedad.NO_CONSECUTIVO}</span>

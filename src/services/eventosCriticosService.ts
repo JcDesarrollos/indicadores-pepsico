@@ -131,5 +131,48 @@ export const eventosCriticosService = {
     `;
     const [rows] = await db.execute<RowDataPacket[]>(sql, [novedadId]);
     return rows as TipoRiesgo[];
+  },
+
+  /**
+   * Obtiene el listado general de novedades (no necesariamente críticas)
+   */
+  getNovedadesRecientes: async (limit: number = 200) => {
+    const sql = `
+      SELECT 
+        N.NO_IDNOVEDAD_PK,
+        N.NO_CONSECUTIVO,
+        N.NO_FECHA_HORA,
+        N.NO_DESCRIPCION,
+        N.NO_GESTION,
+        N.NO_ESTADO,
+        N.NO_ES_CRITICO,
+        TN.TN_NOMBRE,
+        S.SE_NOMBRE,
+        C.CI_NOMBRE,
+        U.US_NOMBRE,
+        CL.CL_NOMBRE,
+        NR.NR_NOMBRE
+      FROM PSC_NOVEDAD N
+      INNER JOIN PSC_TIPO_NOVEDAD TN ON N.TN_IDTIPO_FK = TN.TN_IDTIPO_PK
+      INNER JOIN PSC_PUESTO P ON N.PU_IDPUESTO_FK = P.PU_IDPUESTO_PK
+      INNER JOIN PSC_SEDE S ON P.SE_IDSEDE_FK = S.SE_IDSEDE_PK
+      INNER JOIN PSC_CIUDAD C ON S.CI_IDCIUDAD_FK = C.CI_IDCIUDAD_PK
+      INNER JOIN PSC_USUARIO U ON N.US_IDUSUARIO_FK = U.US_IDUSUARIO_PK
+      INNER JOIN PSC_CLIENTE CL ON N.CL_IDCLIENTE_FK = CL.CL_IDCLIENTE_PK
+      LEFT JOIN PSC_NIVEL_RIESGO NR ON N.NR_IDNIVEL_FK = NR.NR_IDNIVEL_PK
+      ORDER BY N.NO_FECHA_HORA DESC
+      LIMIT ?
+    `;
+    const [rows] = await db.execute<RowDataPacket[]>(sql, [limit]);
+    return rows;
+  },
+
+  /**
+   * Marca una novedad como evento crítico
+   */
+  marcarComoCritico: async (id: number, esCritico: 'SI' | 'NO' = 'SI') => {
+    const sql = `UPDATE PSC_NOVEDAD SET NO_ES_CRITICO = ? WHERE NO_IDNOVEDAD_PK = ?`;
+    await db.execute(sql, [esCritico, id]);
+    return { success: true };
   }
 };

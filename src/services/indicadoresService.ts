@@ -13,6 +13,7 @@ export interface PersonalNode {
     idCiudad?: number | null;
     activo: string;
     foto?: string;
+    esFantasma?: boolean;
     children?: PersonalNode[];
 }
 
@@ -44,44 +45,57 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
     });
 
     const roots: PersonalNode[] = [];
-    const hasAnyJefe = nodes.some(n => n.idJefe !== null);
+    const orphans: PersonalNode[] = [];
 
-    if (hasAnyJefe) {
-        nodes.forEach(node => {
-            if (node.idJefe !== null && map.has(node.idJefe)) {
-                map.get(node.idJefe)!.children!.push(node);
-            } else {
-                // Si no tiene jefe o su jefe no está en la lista activa, es raíz
+    nodes.forEach(node => {
+        if (node.idJefe !== null && map.has(node.idJefe)) {
+            map.get(node.idJefe)!.children!.push(node);
+        } else {
+            // Es raíz o huérfano
+            if (node.idCargo === 1) { // Admin es raíz real
                 roots.push(node);
+            } else {
+                orphans.push(node);
             }
-        });
+        }
+    });
+
+    // Si no hay admins, los primeros de la lista son raíces (fallback)
+    if (roots.length === 0 && orphans.length > 0) {
+        roots.push(orphans.shift()!);
     }
 
-    // Si después de procesar jerarquía real no hay raíces (error en datos) 
-    // o no hay jerarquía definida, usamos el fallback por cargos
-    if (roots.length === 0) {
-        const admins = nodes.filter(n => n.idCargo === 1);
-        const supervisors = nodes.filter(n => n.idCargo === 4);
-        const others = nodes.filter(n => n.idCargo !== 1 && n.idCargo !== 4);
+    // Normalizar niveles de Huérfanos
+    // Queremos que los Guardas estén en el nivel 2, Supervisores en el nivel 1
+    if (roots.length > 0) {
+        const mainRoot = roots[0];
 
-        if (admins.length > 0) {
-            admins.forEach(admin => {
-                admin.children = [...supervisors];
-                roots.push(admin);
-            });
-            if (supervisors.length > 0) {
-                supervisors.forEach((sup, idx) => {
-                    if (idx === 0) sup.children = others.slice(0, 80);
-                });
-            }
-        } else if (supervisors.length > 0) {
-            supervisors.forEach(sup => {
-                sup.children = others.slice(0, 80);
-                roots.push(sup);
-            });
-        } else {
-            roots.push(...nodes.slice(0, 100));
+        // Agrupar huérfanos por cargo
+        const orphanSupervisors = orphans.filter(o => o.idCargo === 4);
+        const orphanGuards = orphans.filter(o => o.idCargo !== 4 && o.idCargo !== 1);
+
+        // Los supervisores huérfanos van directo al admin (nivel 1)
+        if (orphanSupervisors.length > 0) {
+            mainRoot.children!.push(...orphanSupervisors);
         }
+
+        // Los guardas huérfanos necesitan un nodo fantasma en el nivel 1
+        if (orphanGuards.length > 0) {
+            const ghostSupervisor: PersonalNode = {
+                id: -999, // ID negativo para fantasma
+                nombre: 'OTROS COLABORADORES',
+                cargo: 'PERSONAL SIN ASIGNACIÓN DIRECTA',
+                genero: '',
+                idJefe: mainRoot.id,
+                activo: 'SI',
+                esFantasma: true,
+                children: orphanGuards
+            };
+            mainRoot.children!.push(ghostSupervisor);
+        }
+    } else if (orphans.length > 0) {
+        // Fallback total si no hay estructura
+        roots.push(...orphans.slice(0, 50));
     }
 
     return roots;
