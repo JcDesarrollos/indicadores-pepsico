@@ -24,9 +24,9 @@ export default function EditPersonnelModal({ person, onClose, mode }: Props) {
     const [photoLoading, setPhotoLoading] = useState(false);
     const [jefes, setJefes] = useState<{ id: number, nombre: string }[]>([]);
     const [cargos, setCargos] = useState<{ id: number, nombre: string }[]>([]);
-    const [sedes, setSedes] = useState<{ id: number, nombre: string }[]>([]);
+    const [sedes, setSedes] = useState<{ id: number, nombre: string, idZona: number }[]>([]);
     const [zonas, setZonas] = useState<{ id: number, nombre: string }[]>([]);
-    const [puestos, setPuestos] = useState<{ id: number, nombre: string }[]>([]);
+    const [puestos, setPuestos] = useState<{ id: number, nombre: string, idSede: number }[]>([]);
 
     const [formData, setFormData] = useState({
         nombre: person?.nombre || '',
@@ -291,7 +291,7 @@ export default function EditPersonnelModal({ person, onClose, mode }: Props) {
                                     )}
                                     {formData.assignmentType === 'PUESTO' && (
                                         <div className="space-y-3">
-                                           <div className="relative">
+                                            <div className="relative">
                                                 <select
                                                     value={formData.idCiudad || ''}
                                                     onChange={e => setFormData(p => ({ ...p, idCiudad: Number(e.target.value), idSede: null, idPuesto: null }))}
