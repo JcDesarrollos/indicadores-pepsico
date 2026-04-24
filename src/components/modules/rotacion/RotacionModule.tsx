@@ -82,21 +82,21 @@ export default function RotacionModule() {
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 border rounded-lg shadow-sm border-l-4 border-l-rose-500">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
-            <label className="text-[10px] font-black uppercase text-gray-400">Año Comparativo 1:</label>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Año A:</label>
             <select
               value={anio1}
               onChange={(e) => setAnio1(parseInt(e.target.value))}
-              className="border rounded px-2 py-1 text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+              className="flex h-8 rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm outline-none focus:ring-1 focus:ring-ring"
             >
               {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-2 border-l pl-4">
-            <label className="text-[10px] font-black uppercase text-gray-400">Año Comparativo 2:</label>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Año B:</label>
             <select
               value={anio2}
               onChange={(e) => setAnio2(parseInt(e.target.value))}
-              className="border rounded px-2 py-1 text-sm bg-gray-50 focus:ring-2 focus:ring-rose-500 outline-none font-bold"
+              className="flex h-8 rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm outline-none focus:ring-1 focus:ring-ring"
             >
               {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
             </select>
@@ -104,9 +104,8 @@ export default function RotacionModule() {
         </div>
 
         <Button
-          variant="destructive"
-          className="w-full md:w-auto h-10 font-black text-xs uppercase tracking-widest shadow-lg shadow-rose-100 hover:shadow-rose-200"
           onClick={() => setIsModalOpen(true)}
+          className="w-full md:w-auto"
         >
           <Plus className="h-4 w-4 mr-2" /> Registrar Nueva Rotación
         </Button>

@@ -5,6 +5,7 @@ import { OrganigramaNode } from './OrganigramaTree';
 import { ZoomIn, ZoomOut, Maximize, MousePointer2, Plus, UserPlus } from 'lucide-react';
 import { PersonalNode } from '@/services/indicadoresService';
 import EditPersonnelModal from './EditPersonnelModal';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   data: PersonalNode[];
@@ -97,12 +98,11 @@ export default function OrganigramaViewer({ data }: Props) {
     <div className="flex-1 flex flex-col overflow-hidden relative">
       {/* Toolbar Flotante */}
       <div className="absolute top-6 left-6 z-30 flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl">
-        <button
+        <Button
           onClick={() => setEditingPerson({} as any)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#004B93] hover:bg-blue-700 text-white rounded-xl font-bold transition-all text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/10"
         >
-          <Plus size={14} /> Nuevo
-        </button>
+          <Plus size={14} className="mr-2" /> Nuevo
+        </Button>
       </div>
 
       <div className="absolute top-6 right-6 z-30 flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl">
@@ -127,7 +127,7 @@ export default function OrganigramaViewer({ data }: Props) {
             top: '60px'
           }}
         >
-          <div className="flex flex-col items-center pb-80">
+          <div className="flex flex-row flex-nowrap items-start justify-center gap-x-12 pb-80">
             {data.map(root => (
               <OrganigramaNode
                 key={root.id}

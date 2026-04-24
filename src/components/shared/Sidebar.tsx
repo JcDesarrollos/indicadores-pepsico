@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { 
-  Users, 
-  ShieldCheck, 
-  CalendarCheck, 
-  AlertTriangle, 
+import {
+  Users,
+  ShieldCheck,
+  CalendarCheck,
+  AlertTriangle,
   UserMinus,
   LayoutGrid,
   LogOut,
@@ -44,11 +44,11 @@ export default function Sidebar({ user }: SidebarProps) {
       <div className="p-4 lg:p-6 border-b border-slate-50">
         <div className="flex items-center gap-3">
           <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
-            <Image 
-              src="/img-mini-logo.jpeg" 
-              alt="PepsiCo" 
-              width={40} 
-              height={40} 
+            <Image
+              src="/img-mini-logo.jpeg"
+              alt="PepsiCo"
+              width={40}
+              height={40}
               style={{ height: 'auto' }}
               className="object-contain"
             />
@@ -66,36 +66,36 @@ export default function Sidebar({ user }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 space-y-2">
-         {MENU_ITEMS.map((item) => {
+      <nav className="flex-1 px-3 py-4 space-y-1">
+        {MENU_ITEMS.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
           return (
-            <Link 
-              key={item.id} 
+            <Link
+              key={item.id}
               href={item.href}
               title={item.title}
               className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
-                isActive 
-                  ? "bg-slate-50 text-[#004B93]" 
+                "flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200 group relative",
+                isActive
+                  ? "bg-slate-50 text-[#004B93]"
                   : "text-slate-400 hover:text-[#004B93] hover:bg-slate-50/50"
               )}
             >
               <div className={cn(
-                "p-1.5 rounded-lg transition-colors",
+                "p-1.5 rounded-md transition-colors",
                 isActive ? "bg-white shadow-sm ring-1 ring-slate-100" : "bg-transparent"
               )}>
-                <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <item.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span className={cn(
-                "hidden lg:block text-sm font-bold tracking-tight",
+                "hidden lg:block text-[11px] font-bold tracking-tight uppercase",
                 isActive ? "text-[#004B93]" : "text-slate-500"
               )}>
                 {item.title}
               </span>
 
               {isActive && (
-                <div className="absolute left-0 w-1 h-6 bg-[#004B93] rounded-r-full hidden lg:block"></div>
+                <div className="absolute left-0 w-1 h-5 bg-[#004B93] rounded-r-full hidden lg:block"></div>
               )}
             </Link>
           );
@@ -103,10 +103,10 @@ export default function Sidebar({ user }: SidebarProps) {
       </nav>
 
       {/* Footer Logout */}
-      <div className="p-4 border-t border-slate-50">
-        <button className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 group">
-          <LogOut size={20} />
-          <span className="hidden lg:block text-xs font-bold uppercase tracking-widest">Salir</span>
+      <div className="p-3 border-t border-slate-50">
+        <button className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 group">
+          <LogOut size={18} />
+          <span className="hidden lg:block text-[10px] font-bold uppercase tracking-widest">Salir</span>
         </button>
       </div>
     </aside>

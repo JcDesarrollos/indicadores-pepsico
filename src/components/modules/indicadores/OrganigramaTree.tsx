@@ -95,14 +95,15 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
                 </div>
             </div>
 
-            {/* Sub-nodos (Hijos distribuídos por filas) */}
+            {/* Sub-nodos (Hijos distribuídos horizontalmente) */}
             {hasChildren && (
-                <div className="relative flex flex-col items-center">
-                    <div className="absolute top-0 left-[144px] right-[144px] h-px bg-slate-300 dark:bg-slate-800"></div>
+                <div className="relative flex flex-col items-center w-full">
+                    {/* Línea horizontal que conecta todos los hijos - Ahora se extiende dinámicamente */}
+                    <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800" style={{ left: 'calc(128px + 1.5rem)', right: 'calc(128px + 1.5rem)' }}></div>
 
-                    <div className="flex flex-nowrap justify-center gap-x-12 gap-y-12 px-8 pt-8">
+                    <div className="flex flex-row flex-nowrap justify-center gap-x-12 px-8 pt-8">
                         {node.children!.map((child) => (
-                            <div key={child.id} className="relative">
+                            <div key={child.id} className="relative flex-shrink-0">
                                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
                                 <OrganigramaNode node={child} level={level + 1} onEdit={onEdit} />
                             </div>
