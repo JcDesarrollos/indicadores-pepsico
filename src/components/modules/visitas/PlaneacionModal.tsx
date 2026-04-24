@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import {
-    X, Calendar, Building2, Search,
-    Check, Loader2, Plus
+    Calendar, Building2, Search,
+    Check, Loader2
 } from 'lucide-react';
 import { createPlaneacionVisita } from '@/actions/visitasActions';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogDescription,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,51 +46,44 @@ export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess, init
 
     return (
         <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl z-[1000]">
-                <DialogHeader className="px-8 py-6 border-b border-slate-50 bg-white">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-[#004B93]/5 text-[#004B93] rounded-2xl flex items-center justify-center border border-[#004B93]/10">
-                            <Plus size={24} />
-                        </div>
-                        <div className="text-left">
-                            <DialogTitle className="text-sm font-bold text-slate-900 tracking-tight uppercase">Nueva Planeación</DialogTitle>
-                            <DialogDescription className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-0.5">
-                                SGI-OS Seguridad PepsiCo
-                            </DialogDescription>
-                        </div>
-                    </div>
+            <DialogContent className="max-w-lg p-0 overflow-hidden bg-white border border-slate-200 shadow-lg sm:rounded-lg max-h-[95vh] flex flex-col">
+                <DialogHeader className="px-6 py-4 border-b border-slate-100 flex-shrink-0">
+                    <DialogTitle className="text-lg font-bold text-slate-900 tracking-tight">Nueva Planeación</DialogTitle>
+                    <DialogDescription className="text-xs text-slate-500">
+                        Selecciona la fecha y la instalación para programar la visita.
+                    </DialogDescription>
                 </DialogHeader>
 
-                <div className="p-8 space-y-6 bg-slate-50/20">
-                    <div className="grid grid-cols-2 gap-4">
+                <div className="p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* Fecha de Visita */}
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase text-slate-400 ml-1 tracking-widest">Fecha Programada</Label>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold text-slate-700">Fecha Programada</Label>
                             <div className="relative">
-                                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                                 <Input
                                     type="date"
                                     value={fecha}
                                     onChange={e => setFecha(e.target.value)}
-                                    className="pl-11 h-11 bg-white border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:ring-[#004B93]/10"
+                                    className="pl-9 h-10 border-slate-200 rounded-md text-sm focus-visible:ring-[#004B93]"
                                 />
                             </div>
                         </div>
 
                         {/* Selector de Zona */}
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase text-slate-400 ml-1 tracking-widest">Zona (Ciudad)</Label>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold text-slate-700">Zona / Ciudad</Label>
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                                 <select
                                     value={selectedZona || ''}
                                     onChange={e => {
                                         setSelectedZona(e.target.value ? Number(e.target.value) : null);
                                         setSelectedSede(null);
                                     }}
-                                    className="w-full pl-11 h-11 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none appearance-none px-4"
+                                    className="w-full pl-9 h-10 bg-white border border-slate-200 rounded-md text-sm outline-none focus:border-[#004B93] transition-all appearance-none"
                                 >
-                                    <option value="">-- Todas --</option>
+                                    <option value="">Todas las Zonas</option>
                                     {zonas.map(z => <option key={z.id} value={z.id}>{z.nombre}</option>)}
                                 </select>
                             </div>
@@ -97,44 +91,41 @@ export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess, init
                     </div>
 
                     {/* Selector de Sede */}
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-slate-400 ml-1 tracking-widest">Instalación (Site)</Label>
-                        <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                            <div className="relative border-b border-slate-100">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-slate-700">Instalación (Site)</Label>
+                        <div className="border border-slate-200 rounded-md overflow-hidden bg-white">
+                            <div className="relative border-b border-slate-50">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                                 <Input
-                                    placeholder="BUSCAR SITE..."
+                                    placeholder="Buscar por nombre..."
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
-                                    className="border-none pl-11 py-5 h-12 text-[10px] font-bold uppercase bg-transparent focus-visible:ring-0"
+                                    className="border-none pl-9 h-10 text-sm bg-transparent focus-visible:ring-0"
                                 />
                             </div>
-                            <ScrollArea className="h-44">
-                                <div className="p-1 space-y-0.5">
+                            <ScrollArea className="h-48">
+                                <div className="p-1">
                                     {filteredSedes.map(s => (
                                         <button
                                             key={s.id}
                                             onClick={() => setSelectedSede(s.id)}
                                             className={cn(
-                                                "w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-left transition-all",
-                                                selectedSede === s.id ? 'bg-[#004B93]/5 text-[#004B93]' : 'hover:bg-slate-50'
+                                                "w-full flex items-center justify-between px-3 py-2 rounded text-left transition-colors",
+                                                selectedSede === s.id 
+                                                    ? 'bg-slate-100 text-[#004B93] font-bold' 
+                                                    : 'hover:bg-slate-50 text-slate-600'
                                             )}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className={cn(
-                                                    "w-7 h-7 rounded-lg flex items-center justify-center transition-all",
-                                                    selectedSede === s.id ? "bg-[#004B93] text-white" : "bg-slate-100 text-slate-400"
-                                                )}>
-                                                    <Building2 size={13} />
-                                                </div>
-                                                <span className="text-[10px] font-bold uppercase leading-none">{s.nombre}</span>
+                                                <Building2 size={14} className={selectedSede === s.id ? "text-[#004B93]" : "text-slate-400"} />
+                                                <span className="text-xs uppercase">{s.nombre}</span>
                                             </div>
-                                            {selectedSede === s.id && <div className="w-4 h-4 bg-[#004B93] rounded-full flex items-center justify-center text-white"><Check size={8} /></div>}
+                                            {selectedSede === s.id && <Check size={14} className="text-[#004B93]" />}
                                         </button>
                                     ))}
                                     {filteredSedes.length === 0 && (
-                                        <div className="p-8 text-center text-slate-400 italic text-[10px] uppercase font-bold tracking-widest">
-                                            No se encontraron sitios
+                                        <div className="p-8 text-center text-slate-400 text-xs italic">
+                                            No hay resultados
                                         </div>
                                     )}
                                 </div>
@@ -143,8 +134,8 @@ export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess, init
                     </div>
                 </div>
 
-                <div className="px-8 py-6 bg-white border-t border-slate-50 flex items-center justify-between gap-4">
-                    <Button variant="ghost" onClick={onClose} className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <DialogFooter className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 flex-shrink-0">
+                    <Button variant="outline" size="sm" onClick={onClose} className="h-9 px-4 text-xs font-bold uppercase transition-all">
                         Cancelar
                     </Button>
                     <Button
@@ -155,12 +146,12 @@ export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess, init
                             if (res.success) onSuccess();
                             setLoading(false);
                         }}
-                        className="px-8 bg-[#004B93] hover:bg-[#003a73] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/10 gap-2 h-11"
+                        className="h-9 px-6 bg-[#004B93] hover:bg-blue-800 text-white font-bold text-xs uppercase transition-all flex items-center gap-2"
                     >
-                        {loading ? <Loader2 className="animate-spin" size={14} /> : <Check size={14} />}
-                        Confirmar Registro
+                        {loading && <Loader2 className="animate-spin" size={14} />}
+                        Guardar Planeación
                     </Button>
-                </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

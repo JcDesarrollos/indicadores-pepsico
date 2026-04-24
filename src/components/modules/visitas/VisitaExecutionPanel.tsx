@@ -295,8 +295,8 @@ export default function VisitaExecutionPanel({ visita, allTareas: initialTareas,
                 </aside>
 
                 {/* LADO DERECHO: Lista de Registros */}
-                <main className="flex-1 bg-muted/20 flex flex-col p-6 overflow-hidden">
-                    <div className="flex items-center justify-between mb-4">
+                <main className="flex-1 bg-muted/20 flex flex-col p-6 overflow-hidden min-h-0">
+                    <div className="flex items-center justify-between mb-4 flex-shrink-0">
                         <div className="flex items-center gap-2">
                             <ListTodo className="h-4 w-4 text-primary" />
                             <h3 className="text-sm font-bold uppercase tracking-tight">Hallazgos Registrados</h3>
@@ -304,7 +304,7 @@ export default function VisitaExecutionPanel({ visita, allTareas: initialTareas,
                         <Badge variant="outline" className="bg-background font-bold text-[10px]">{resultados.length} ITEMS</Badge>
                     </div>
 
-                    <ScrollArea className="flex-1">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-20">
                             {resultados.map((res, idx) => (
                                 <Card key={idx} className="group border shadow-sm hover:border-primary transition-colors">
@@ -342,7 +342,7 @@ export default function VisitaExecutionPanel({ visita, allTareas: initialTareas,
                                 </div>
                             )}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </main>
             </div>
 
