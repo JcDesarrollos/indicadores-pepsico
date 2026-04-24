@@ -86,17 +86,18 @@ export default function NovedadesModule() {
       </div>
 
       {/* Tabla de Novedades - Sin sombras pesadas y más cuadrada */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex-1 flex flex-col overflow-hidden">
+      <div 
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex-1 flex flex-col overflow-hidden"
+        style={{ maxHeight: '85dvh' }}
+      >
         <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
-          <table className="w-full text-left border-collapse min-w-[1200px]">
+          <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 sticky top-0 z-10">
                 <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest">ID</th>
                 <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest">Fecha / Hora</th>
                 <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest">Sede / Ciudad</th>
-                <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest">Cliente</th>
                 <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest">Tipo</th>
-                <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest">Usuario</th>
                 <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest text-center">Crítico</th>
                 <th className="px-4 py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest text-right">Detalle</th>
               </tr>
@@ -104,7 +105,7 @@ export default function NovedadesModule() {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="py-20 text-center">
+                  <td colSpan={6} className="py-20 text-center">
                     <Loader2 className="h-4 w-4 animate-spin mx-auto text-slate-400" />
                   </td>
                 </tr>
@@ -120,14 +121,8 @@ export default function NovedadesModule() {
                     <td className="px-4 py-1.5 text-[10px] text-slate-600 uppercase">
                       {n.SE_NOMBRE} - {n.CI_NOMBRE}
                     </td>
-                    <td className="px-4 py-1.5 text-[10px] text-slate-600">
-                      {n.CL_NOMBRE}
-                    </td>
                     <td className="px-4 py-1.5 text-[10px] text-slate-500 uppercase">
                       {n.TN_NOMBRE}
-                    </td>
-                    <td className="px-4 py-1.5 text-[10px] text-slate-600 uppercase">
-                      {n.US_NOMBRE}
                     </td>
                     <td className="px-4 py-1.5 text-center">
                       <button 
@@ -160,7 +155,7 @@ export default function NovedadesModule() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-slate-400 text-[10px] italic">
+                  <td colSpan={6} className="py-10 text-center text-slate-400 text-[10px] italic">
                     Sin registros.
                   </td>
                 </tr>

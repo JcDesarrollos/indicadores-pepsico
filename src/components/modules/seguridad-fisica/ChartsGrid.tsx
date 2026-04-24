@@ -16,7 +16,7 @@ interface Props extends DashboardData {
 }
 
 export default function ChartsGrid({ 
-  genderData, roleData, modalityData, sitesDetail, totalPersonnel, renderOnly, visitasStats 
+  genderData, roleData, modalityData, sitesDetail, totalPersonnel, renderOnly, visitasStats, rotationStats 
 }: Props) {
   const [isVisitasModalOpen, setIsVisitasModalOpen] = useState(false);
   const LARKON_ORANGE = '#FF6B4A';
@@ -136,34 +136,56 @@ export default function ChartsGrid({
 
   const bottomCharts = (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
-      {/* Balance de Género Simplificado - SIN DONA */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm h-full flex flex-col">
-         <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-8 border-l-2 border-pink-500 pl-3">
-            Balance de Género
-         </h5>
-         
-         <div className="flex-1 grid grid-cols-2 gap-6 relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px] h-12 bg-slate-100 dark:bg-slate-800"></div>
-            
-            {genderData.map((entry, i) => (
-               <div key={i} className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50/50 dark:bg-slate-800/30 group hover:bg-slate-100 transition-colors">
-                  <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center mb-3 shadow-sm border border-white dark:border-slate-700"
-                    style={{ backgroundColor: entry.color, color: 'white' }}
-                  >
-                     {entry.name === 'HOMBRE' ? <Man size={20} strokeWidth={3} /> : <Woman size={20} strokeWidth={3} />}
+      {/* Panel Dual: Género y Rotación */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm h-full flex overflow-hidden">
+         {/* Lado A: Balance de Género */}
+         <div className="flex-1 p-5 border-r border-slate-100 dark:border-slate-800 flex flex-col">
+            <h5 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6 border-l-2 border-pink-500 pl-3">
+               Balance de Género
+            </h5>
+            <div className="flex-1 flex flex-col justify-around gap-2">
+               {genderData.map((entry, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl">
+                     <div 
+                       className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm text-white"
+                       style={{ backgroundColor: entry.color }}
+                     >
+                        {entry.name === 'HOMBRE' ? <Man size={16} strokeWidth={3} /> : <Woman size={16} strokeWidth={3} />}
+                     </div>
+                     <div className="flex-1">
+                        <p className="text-[8px] font-black text-slate-400 uppercase leading-none mb-1">{entry.name}S</p>
+                        <div className="flex items-baseline gap-2">
+                           <span className="text-lg font-black text-slate-900 dark:text-white leading-none">{entry.value}</span>
+                           <span className="text-[8px] font-bold text-slate-400">{totalPersonnel > 0 ? ((entry.value / totalPersonnel) * 100).toFixed(0) : 0}%</span>
+                        </div>
+                     </div>
                   </div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{entry.name}S</span>
-                  <div className="flex items-baseline gap-1.5">
-                     <span className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
-                        {entry.value}
-                     </span>
-                     <span className="text-[10px] font-bold text-slate-400 bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200">
-                        {totalPersonnel > 0 ? ((entry.value / totalPersonnel) * 100).toFixed(0) : 0}%
-                     </span>
-                  </div>
+               ))}
+            </div>
+         </div>
+
+         {/* Lado B: Rotación Anual */}
+         <div className="flex-1 p-5 bg-slate-50/20 dark:bg-slate-900/50 flex flex-col">
+            <h5 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6 border-l-2 border-amber-500 pl-3">
+               Rotación {new Date().getFullYear()}
+            </h5>
+            <div className="flex-1 flex flex-col">
+               <div className="mb-4">
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Rotaciones</p>
+                  <span className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
+                     {rotationStats?.total || 0}
+                  </span>
                </div>
-            ))}
+               
+               <div className="flex-1 space-y-2">
+                  {rotationStats?.byType.slice(0, 3).map((rot, i) => (
+                     <div key={i} className="flex justify-between items-center bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
+                        <span className="text-[8px] font-bold text-slate-500 uppercase truncate pr-2">{rot.name}</span>
+                        <span className="text-[10px] font-black text-amber-600 dark:text-amber-400">{rot.value}</span>
+                     </div>
+                  ))}
+               </div>
+            </div>
          </div>
       </div>
 

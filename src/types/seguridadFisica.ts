@@ -41,5 +41,9 @@ export interface DashboardData {
     planeadas: number;
     ejecutadas: number;
     mensual: { mes_num: number, planeadas: number, ejecutadas: number }[];
+  };
+  rotationStats?: {
+    total: number;
+    byType: { name: string, value: number }[];
   }
 }

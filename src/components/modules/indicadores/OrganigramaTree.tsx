@@ -13,15 +13,20 @@ interface Props {
 export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) => {
     const hasChildren = node.children && node.children.length > 0;
 
-    const renderChildren = () => (
-        <div className="relative flex flex-col items-center w-full">
-            {/* Línea horizontal que conecta todos los hijos */}
-            <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800" style={{ left: 'calc(128px + 1.5rem)', right: 'calc(128px + 1.5rem)' }}></div>
+    const childrenGrid = hasChildren && (
+        <div className="relative flex flex-col items-center w-full mt-4">
+            {/* Línea horizontal superior que conecta todos los hijos de la primera fila */}
+            <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800" 
+                 style={{ 
+                     left: node.children!.length > 1 ? '10%' : '50%', 
+                     right: node.children!.length > 1 ? '10%' : '50%' 
+                 }}></div>
 
-            <div className="flex flex-row flex-nowrap justify-center gap-x-12 px-8 pt-8">
+            <div className="flex flex-row flex-wrap justify-center gap-x-6 gap-y-12 px-2 pt-8 max-w-[1400px]">
                 {node.children!.map((child) => (
-                    <div key={child.id} className="relative flex-shrink-0">
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
+                    <div key={child.id} className="relative flex-shrink-0 flex flex-col items-center">
+                        {/* Línea vertical individual que sube al conector horizontal */}
+                        <div className="absolute -top-8 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
                         <OrganigramaNode node={child} level={level + 1} onEdit={onEdit} />
                     </div>
                 ))}
@@ -32,7 +37,6 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
     if (node.esFantasma) {
         return (
             <div className="flex flex-col items-center">
-                {/* Espacio invisible que ocupa el lugar del nodo */}
                 <div className="flex flex-col items-center justify-center p-0.5 mb-14">
                    <div className="w-64 h-24 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[32px] opacity-40">
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center px-4 leading-tight">
@@ -41,7 +45,7 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
                    </div>
                    <div className="w-px h-12 bg-slate-300 dark:bg-slate-700 mt-0"></div>
                 </div>
-                {hasChildren && renderChildren()}
+                {childrenGrid}
             </div>
         );
     }
@@ -128,8 +132,7 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
                 </div>
             </div>
 
-            {/* Sub-nodos */}
-            {hasChildren && renderChildren()}
+            {childrenGrid}
         </div>
     );
 };

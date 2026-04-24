@@ -119,6 +119,16 @@ export async function getSecurityDashboardData(): Promise<DashboardData> {
     ) m
   `, [currentYear, currentYear]);
 
+  // 8. Estadísticas de Rotación (Año Actual)
+  const [rotationTypeRows] = await db.query<RowDataPacket[]>(`
+    SELECT RO_TIPO as name, COUNT(*) as value 
+    FROM PSC_ROTACION 
+    WHERE YEAR(RO_FECHA) = ?
+    GROUP BY RO_TIPO
+  `, [currentYear]);
+
+  const totalRotations = rotationTypeRows.reduce((acc, curr) => acc + curr.value, 0);
+
   return {
     metrics: metricsRows[0] as any,
     genderData,
@@ -129,6 +139,10 @@ export async function getSecurityDashboardData(): Promise<DashboardData> {
       planeadas: visitasRows[0].planeadas,
       ejecutadas: visitasRows[0].ejecutadas,
       mensual: mensualRows as any
+    },
+    rotationStats: {
+      total: totalRotations,
+      byType: rotationTypeRows as any
     }
   };
 }
