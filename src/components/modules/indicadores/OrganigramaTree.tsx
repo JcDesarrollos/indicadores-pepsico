@@ -3,6 +3,7 @@
 import React from 'react';
 import { PersonalNode } from '@/services/indicadoresService';
 import { User, Briefcase, Pencil } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Props {
     node: PersonalNode;
@@ -13,19 +14,22 @@ interface Props {
 export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) => {
     const hasChildren = node.children && node.children.length > 0;
 
+    const isGuardsBranch = node.children?.every(c => c.idCargo === 2);
+
     const childrenGrid = hasChildren && (
         <div className="relative flex flex-col items-center w-full mt-4">
-            {/* Línea horizontal superior que conecta todos los hijos de la primera fila */}
             <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800" 
                  style={{ 
-                     left: node.children!.length > 1 ? '10%' : '50%', 
-                     right: node.children!.length > 1 ? '10%' : '50%' 
+                     left: node.children!.length > 1 ? '5%' : '50%', 
+                     right: node.children!.length > 1 ? '5%' : '50%' 
                  }}></div>
 
-            <div className="flex flex-row flex-wrap justify-center gap-x-6 gap-y-12 px-2 pt-8 max-w-[1400px]">
+            <div className={cn(
+                "flex flex-row justify-center gap-x-6 gap-y-12 px-2 pt-8",
+                isGuardsBranch ? "flex-wrap max-w-[1400px]" : "flex-nowrap"
+            )}>
                 {node.children!.map((child) => (
                     <div key={child.id} className="relative flex-shrink-0 flex flex-col items-center">
-                        {/* Línea vertical individual que sube al conector horizontal */}
                         <div className="absolute -top-8 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
                         <OrganigramaNode node={child} level={level + 1} onEdit={onEdit} />
                     </div>
