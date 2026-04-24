@@ -20,14 +20,8 @@ export async function getVisitasCronograma(anio: number): Promise<VisitaCronogra
         JOIN PSC_CIUDAD C ON S.CI_IDCIUDAD_FK = C.CI_IDCIUDAD_PK
         LEFT JOIN PSC_VISITA V ON S.SE_IDSEDE_PK = V.SE_IDSEDE_FK AND YEAR(V.VI_FECHA_PLANEADA) = ? AND V.VI_ACTIVO = 'SI'
         WHERE S.SE_ACTIVO = 'SI'
-        AND EXISTS (
-            SELECT 1 FROM PSC_VISITA V2 
-            WHERE V2.SE_IDSEDE_FK = S.SE_IDSEDE_PK 
-            AND YEAR(V2.VI_FECHA_PLANEADA) = ? 
-            AND V2.VI_ACTIVO = 'SI'
-        )
         ORDER BY C.CI_NOMBRE, S.SE_NOMBRE
-    `, [anio, anio]);
+    `, [anio]);
 
     // Agrupar por sede
     const map = new Map<number, VisitaCronogramaRow>();

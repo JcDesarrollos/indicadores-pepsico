@@ -31,6 +31,7 @@ export default function CronogramaVisitas({ initialData, allTareas, sedes, zonas
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCell, setSelectedCell] = useState<{ row: VisitaCronogramaRow, visits: Visita[] } | null>(null);
     const [isPlanningOpen, setIsPlanningOpen] = useState(false);
+    const [planningData, setPlanningData] = useState<{ sedeId: number, date: string } | null>(null);
 
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -278,13 +279,26 @@ export default function CronogramaVisitas({ initialData, allTareas, sedes, zonas
 
                                                     return (
                                                         <td key={i} className="border border-slate-200 p-0 relative h-10">
-                                                            {visits.length > 0 && (
+                                                            {visits.length > 0 ? (
                                                                 <div
                                                                     onClick={() => setSelectedCell({ row, visits })}
                                                                     className={cn(
-                                                                        "absolute inset-0 cursor-pointer transition-all",
-                                                                        hasExecuted ? "bg-[#39FF14]" : hasPlanned ? "bg-[#004B93]" : ""
+                                                                        "absolute inset-0 cursor-pointer transition-all hover:brightness-110",
+                                                                        hasExecuted ? "bg-[#39FF14]" : "bg-[#004B93]"
                                                                     )}
+                                                                />
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const dia = Math.min((sem - 1) * 7 + 1, 28);
+                                                                        const d = new Date(currentAnio, mes - 1, dia);
+                                                                        setPlanningData({
+                                                                            sedeId: row.idSede,
+                                                                            date: d.toISOString().split('T')[0]
+                                                                        });
+                                                                        setIsPlanningOpen(true);
+                                                                    }}
+                                                                    className="absolute inset-0 w-full h-full hover:bg-blue-50/50 transition-colors"
                                                                 />
                                                             )}
                                                         </td>
@@ -377,8 +391,14 @@ export default function CronogramaVisitas({ initialData, allTareas, sedes, zonas
                 <PlaneacionModal
                     sedes={sedes}
                     zonas={zonas}
-                    onClose={() => setIsPlanningOpen(false)}
-                    onSuccess={() => { setIsPlanningOpen(false); router.refresh(); }}
+                    initialSedeId={planningData?.sedeId}
+                    initialDate={planningData?.date}
+                    onClose={() => { setIsPlanningOpen(false); setPlanningData(null); }}
+                    onSuccess={() => {
+                        setIsPlanningOpen(false);
+                        setPlanningData(null);
+                        router.refresh();
+                    }}
                 />
             )}
         </div>

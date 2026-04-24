@@ -24,14 +24,18 @@ interface Props {
     zonas: { id: number, nombre: string }[];
     onClose: () => void;
     onSuccess: () => void;
+    initialSedeId?: number;
+    initialDate?: string;
 }
 
-export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess }: Props) {
+export default function PlaneacionModal({ sedes, zonas, onClose, onSuccess, initialSedeId, initialDate }: Props) {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedZona, setSelectedZona] = useState<number | null>(null);
-    const [selectedSede, setSelectedSede] = useState<number | null>(null);
-    const [fecha, setFecha] = useState('');
+    const [selectedZona, setSelectedZona] = useState<number | null>(
+        initialSedeId ? (sedes.find(s => s.id === initialSedeId)?.idZona || null) : null
+    );
+    const [selectedSede, setSelectedSede] = useState<number | null>(initialSedeId || null);
+    const [fecha, setFecha] = useState(initialDate || '');
 
     const filteredSedes = sedes.filter(s => {
         const matchesSearch = s.nombre.toLowerCase().includes(searchTerm.toLowerCase());

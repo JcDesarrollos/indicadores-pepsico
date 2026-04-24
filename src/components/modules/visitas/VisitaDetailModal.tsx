@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { X, Play, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { X, Play, CheckCircle2, Clock, AlertCircle, Trash2 } from 'lucide-react';
+import { deleteVisita } from '@/actions/visitasActions';
 import { Visita, VisitaTarea } from '@/types/visitas';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -77,18 +78,35 @@ export default function VisitaDetailModal({ visitas, onClose }: Props) {
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={() => handleExecute(visita.id)}
-                                    className={cn(
-                                        "flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg",
-                                        visita.estado === 'EJECUTADA'
-                                            ? "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 shadow-slate-200/50"
-                                            : "bg-[#004B93] text-white hover:bg-blue-900 hover:translate-x-1 shadow-blue-900/20"
-                                    )}
-                                >
-                                    {visita.estado === 'EJECUTADA' ? 'Ver Detalles' : 'Iniciar Ejecución'}
-                                    <Play size={16} className={cn(visita.estado === 'EJECUTADA' && "hidden")} />
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm('¿Estás seguro de eliminar esta planeación y todas sus evidencias?')) {
+                                                const res = await deleteVisita(visita.id);
+                                                if (res.success) {
+                                                    router.refresh();
+                                                    onClose();
+                                                }
+                                            }
+                                        }}
+                                        className="p-4 rounded-2xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100"
+                                        title="Eliminar Visita"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleExecute(visita.id)}
+                                        className={cn(
+                                            "flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg",
+                                            visita.estado === 'EJECUTADA'
+                                                ? "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 shadow-slate-200/50"
+                                                : "bg-[#004B93] text-white hover:bg-blue-900 hover:translate-x-1 shadow-blue-900/20"
+                                        )}
+                                    >
+                                        {visita.estado === 'EJECUTADA' ? 'Ver Detalles' : 'Iniciar Ejecución'}
+                                        <Play size={16} className={cn(visita.estado === 'EJECUTADA' && "hidden")} />
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
