@@ -111,6 +111,7 @@ export async function getRotacionMotivos(anio: number) {
   try {
     const query = `
       SELECT 
+        MONTH(RO_FECHA) as mes_num,
         CASE MONTH(RO_FECHA)
           WHEN 1 THEN 'Ene' WHEN 2 THEN 'Feb' WHEN 3 THEN 'Mar' WHEN 4 THEN 'Abr'
           WHEN 5 THEN 'May' WHEN 6 THEN 'Jun' WHEN 7 THEN 'Jul' WHEN 8 THEN 'Ago'
@@ -120,8 +121,8 @@ export async function getRotacionMotivos(anio: number) {
         COUNT(*) as cantidad
       FROM PSC_ROTACION
       WHERE YEAR(RO_FECHA) = ?
-      GROUP BY mes, RO_TIPO
-      ORDER BY MONTH(RO_FECHA)
+      GROUP BY mes_num, mes, RO_TIPO
+      ORDER BY mes_num
     `;
 
     const [rows] = await db.execute(query, [anio]);
