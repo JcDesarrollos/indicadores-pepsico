@@ -98,9 +98,9 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
             {/* Sub-nodos (Hijos distribuídos por filas) */}
             {hasChildren && (
                 <div className="relative flex flex-col items-center">
-                    <div className="absolute top-0 left-12 right-12 h-px bg-slate-300 dark:bg-slate-800"></div>
+                    <div className="absolute top-0 left-[144px] right-[144px] h-px bg-slate-300 dark:bg-slate-800"></div>
 
-                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-12 px-4 pt-8 max-w-[1400px]">
+                    <div className="flex flex-nowrap justify-center gap-x-12 gap-y-12 px-8 pt-8">
                         {node.children!.map((child) => (
                             <div key={child.id} className="relative">
                                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
