@@ -105,47 +105,28 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
         // 1. Supervisores huérfanos -> Nivel 1 (Bajo Admin)
         if (orphanSupervisors.length > 0) mainRoot.children!.push(...orphanSupervisors);
 
-        // 2. Operadores huérfanos -> Nivel 2 (Bajo Supervisores Reales para equilibrar)
-        const allSupervisors = mainRoot.children?.filter(c => c.idCargo === 4) || [];
+        // 2. Operadores huérfanos -> Nivel 2 (vía Supervisor Fantasma)
         if (orphanOperators.length > 0) {
-            orphanOperators.forEach((op, index) => {
-                const targetSup = allSupervisors[index % allSupervisors.length] || mainRoot;
-                targetSup.children = targetSup.children || [];
-                targetSup.children.push(op);
-            });
+            const ghostSup: PersonalNode = {
+                id: -999, nombre: 'SUPERVISIÓN OPERATIVA', cargo: 'PERSONAL SIN ASIGNACIÓN', genero: '',
+                idJefe: mainRoot.id, activo: 'SI', idCargo: 4, esFantasma: true, children: orphanOperators
+            };
+            mainRoot.children!.push(ghostSup);
         }
 
-        // 3. Guardas huérfanos -> Nivel 3 (Distribuirlos bajo todos los Supervisores para formar base)
-        const limitedOrphanGuards = orphanGuards.slice(0, 30); // Limitamos a 30 para no saturar demasiado en una sola prueba
+        // 3. Guardas huérfanos -> Nivel 3 (Una sola rama fantasma para formar la base de la pirámide)
+        const limitedOrphanGuards = orphanGuards.slice(0, 10); 
         if (limitedOrphanGuards.length > 0) {
-            if (allSupervisors.length > 0) {
-                limitedOrphanGuards.forEach((guard, index) => {
-                    const targetSup = allSupervisors[index % allSupervisors.length];
-                    // Asegurar que cuelgue de un Operador (real o fantasma) para estar en Nivel 3
-                    let targetOp = targetSup.children?.find(c => c.idCargo === 3);
-                    if (!targetOp) {
-                        targetOp = {
-                            id: -800 - targetSup.id, nombre: 'OPERADORES DE MEDIOS', cargo: 'APOYO OPERATIVO', genero: '',
-                            idJefe: targetSup.id, activo: 'SI', idCargo: 3, esFantasma: true, children: []
-                        };
-                        targetSup.children = targetSup.children || [];
-                        targetSup.children.push(targetOp);
-                    }
-                    targetOp.children!.push(guard);
-                });
-            } else {
-                // Si no hay supervisores, colgarlos directamente del admin vía doble ghost para nivel 3
-                const ghostSup: PersonalNode = {
-                    id: -998, nombre: 'SUPERVISIÓN', cargo: 'SOPORTE', genero: '',
-                    idJefe: mainRoot.id, activo: 'SI', idCargo: 4, esFantasma: true, children: []
-                };
-                const ghostOp: PersonalNode = {
-                    id: -888, nombre: 'OPERADORES', cargo: 'SOPORTE', genero: '',
-                    idJefe: -998, activo: 'SI', idCargo: 3, esFantasma: true, children: limitedOrphanGuards
-                };
-                ghostSup.children!.push(ghostOp);
-                mainRoot.children!.push(ghostSup);
-            }
+            const ghostSupForGuards: PersonalNode = {
+                id: -998, nombre: 'SUPERVISIÓN OPERATIVA', cargo: 'PERSONAL SIN ASIGNACIÓN', genero: '',
+                idJefe: mainRoot.id, activo: 'SI', idCargo: 4, esFantasma: true, children: []
+            };
+            const ghostOpForGuards: PersonalNode = {
+                id: -888, nombre: 'MEDIOS Y MONITOREO', cargo: 'OPERADORES GHOST', genero: '',
+                idJefe: -998, activo: 'SI', idCargo: 3, esFantasma: true, children: limitedOrphanGuards
+            };
+            ghostSupForGuards.children!.push(ghostOpForGuards);
+            mainRoot.children!.push(ghostSupForGuards);
         }
     }
 

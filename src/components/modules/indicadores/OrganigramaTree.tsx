@@ -18,11 +18,14 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
 
     const childrenGrid = hasChildren && (
         <div className="relative flex flex-col items-center w-full mt-4">
-            <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800" 
-                 style={{ 
-                     left: node.children!.length > 1 ? '5%' : '50%', 
-                     right: node.children!.length > 1 ? '5%' : '50%' 
-                 }}></div>
+            {/* Línea horizontal superior (Oculta si es fantasma) */}
+            {!node.esFantasma && (
+                <div className="absolute top-0 h-px bg-slate-300 dark:bg-slate-800"
+                    style={{
+                        left: node.children!.length > 1 ? '5%' : '50%',
+                        right: node.children!.length > 1 ? '5%' : '50%'
+                    }}></div>
+            )}
 
             <div className={cn(
                 "flex flex-row justify-center gap-x-6 gap-y-12 px-2 pt-8",
@@ -30,7 +33,10 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
             )}>
                 {node.children!.map((child) => (
                     <div key={child.id} className="relative flex-shrink-0 flex flex-col items-center">
-                        <div className="absolute -top-8 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
+                        {/* Línea vertical individual (Oculta si el padre o el hijo es fantasma) */}
+                        {!node.esFantasma && !child.esFantasma && (
+                            <div className="absolute -top-8 w-px h-8 bg-slate-300 dark:bg-slate-800"></div>
+                        )}
                         <OrganigramaNode node={child} level={level + 1} onEdit={onEdit} />
                     </div>
                 ))}
@@ -41,14 +47,7 @@ export const OrganigramaNode: React.FC<Props> = ({ node, level = 0, onEdit }) =>
     if (node.esFantasma) {
         return (
             <div className="flex flex-col items-center">
-                <div className="flex flex-col items-center justify-center p-0.5 mb-14">
-                   <div className="w-64 h-24 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[32px] opacity-40">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center px-4 leading-tight">
-                            {node.nombre}
-                        </span>
-                   </div>
-                   <div className="w-px h-12 bg-slate-300 dark:bg-slate-700 mt-0"></div>
-                </div>
+                {/* Nodo 100% invisible para asegurar que los hijos bajen de nivel sin conectores */}
                 {childrenGrid}
             </div>
         );
