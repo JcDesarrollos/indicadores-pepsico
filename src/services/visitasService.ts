@@ -19,7 +19,7 @@ export async function getVisitasCronograma(anio: number): Promise<VisitaCronogra
         FROM PSC_SEDE S
         JOIN PSC_CIUDAD C ON S.CI_IDCIUDAD_FK = C.CI_IDCIUDAD_PK
         LEFT JOIN PSC_VISITA V ON S.SE_IDSEDE_PK = V.SE_IDSEDE_FK AND YEAR(V.VI_FECHA_PLANEADA) = ? AND V.VI_ACTIVO = 'SI'
-        WHERE S.SE_ACTIVO = 'SI'
+        WHERE S.SE_ACTIVO = 'SI' AND C.CI_ACTIVO = 'SI'
         ORDER BY C.CI_NOMBRE, S.SE_NOMBRE
     `, [anio]);
 

@@ -9,10 +9,10 @@ export async function getSecurityDashboardData(): Promise<DashboardData> {
   // 1. Métricas generales
   const [metricsRows] = await db.query<RowDataPacket[]>(`
     SELECT 
-      (SELECT COUNT(*) FROM PSC_CIUDAD) as totalZones,
-      (SELECT COUNT(*) FROM PSC_SEDE) as totalSites,
-      (SELECT COUNT(*) FROM PSC_PUESTO) as totalPosts,
-      (SELECT COUNT(*) FROM PSC_PERSONAL) as totalPersonnel
+      (SELECT COUNT(*) FROM PSC_CIUDAD WHERE CI_ACTIVO = 'SI') as totalZones,
+      (SELECT COUNT(*) FROM PSC_SEDE WHERE SE_ACTIVO = 'SI') as totalSites,
+      (SELECT COUNT(*) FROM PSC_PUESTO WHERE PU_ACTIVO = 'SI') as totalPosts,
+      (SELECT COUNT(*) FROM PSC_PERSONAL WHERE PR_ACTIVO = 'SI') as totalPersonnel
   `);
 
   // 2. Distribución de género
@@ -93,15 +93,42 @@ export async function getSecurityDashboardData(): Promise<DashboardData> {
       ) as hombres
     FROM PSC_SEDE S
     JOIN PSC_CIUDAD C ON S.CI_IDCIUDAD_FK = C.CI_IDCIUDAD_PK
-    WHERE S.SE_ACTIVO = 'SI'
+    WHERE S.SE_ACTIVO = 'SI' AND C.CI_ACTIVO = 'SI'
     ORDER BY C.CI_NOMBRE, S.SE_NOMBRE
   `);
+
+  // 6. Estadísticas de Visitas (Mes Actual)
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+
+  const [visitasRows] = await db.query<RowDataPacket[]>(`
+    SELECT 
+      (SELECT COUNT(*) FROM PSC_VISITA WHERE MONTH(VI_FECHA_PLANEADA) = ? AND YEAR(VI_FECHA_PLANEADA) = ? AND VI_ACTIVO = 'SI') as planeadas,
+      (SELECT COUNT(*) FROM PSC_VISITA WHERE MONTH(VI_FECHA_PLANEADA) = ? AND YEAR(VI_FECHA_PLANEADA) = ? AND VI_ACTIVO = 'SI' AND VI_ESTADO = 'EJECUTADA') as ejecutadas
+  `, [currentMonth, currentYear, currentMonth, currentYear]);
+
+  // 7. Datos mensuales para el monitor (Opcional pero recomendado para realismo)
+  const [mensualRows] = await db.query<RowDataPacket[]>(`
+    SELECT 
+        m.mes_num,
+        (SELECT COUNT(*) FROM PSC_VISITA WHERE MONTH(VI_FECHA_PLANEADA) = m.mes_num AND YEAR(VI_FECHA_PLANEADA) = ? AND VI_ACTIVO = 'SI') as planeadas,
+        (SELECT COUNT(*) FROM PSC_VISITA WHERE MONTH(VI_FECHA_PLANEADA) = m.mes_num AND YEAR(VI_FECHA_PLANEADA) = ? AND VI_ACTIVO = 'SI' AND VI_ESTADO = 'EJECUTADA') as ejecutadas
+    FROM (
+        SELECT 1 as mes_num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 
+        UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+    ) m
+  `, [currentYear, currentYear]);
 
   return {
     metrics: metricsRows[0] as any,
     genderData,
     roleData: roleRows as any,
     modalityData: modalityRows as any,
-    sitesDetail: sitesRows as any
+    sitesDetail: sitesRows as any,
+    visitasStats: {
+      planeadas: visitasRows[0].planeadas,
+      ejecutadas: visitasRows[0].ejecutadas,
+      mensual: mensualRows as any
+    }
   };
 }

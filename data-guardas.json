@@ -1,0 +1,194 @@
+[
+    {
+        "ID_ZONA": 1,
+        "ZONA": "BOGOTA - SABANA",
+        "SEDES": [
+            {
+                "ID_SEDE": 3,
+                "NOMBRE": "PLANTA ALIMENTOS FUNZA",
+                "P_TOTAL": 5,
+                "H": 8,
+                "M": 5,
+                "IDS_P": [
+                    123,
+                    128,
+                    150,
+                    154,
+                    3
+                ]
+            },
+            {
+                "ID_SEDE": 2,
+                "NOMBRE": "PLANTA ALIMENTOS MARGARITA",
+                "P_TOTAL": 2,
+                "H": 5,
+                "M": 1,
+                "IDS_P": [
+                    2,
+                    999
+                ]
+            },
+            {
+                "ID_SEDE": 7,
+                "NOMBRE": "PEC MONTEVIDEO",
+                "P_TOTAL": 1,
+                "H": 3,
+                "M": 0,
+                "IDS_P": [
+                    165
+                ]
+            },
+            {
+                "ID_SEDE": 6,
+                "NOMBRE": "PEC ALQUERIA",
+                "P_TOTAL": 1,
+                "H": 3,
+                "M": 0,
+                "IDS_P": [
+                    135
+                ]
+            },
+            {
+                "ID_SEDE": 1,
+                "NOMBRE": "CECOM",
+                "P_TOTAL": 1,
+                "H": 2,
+                "M": 1,
+                "IDS_P": [
+                    1
+                ]
+            },
+            {
+                "ID_SEDE": 5,
+                "NOMBRE": "MIXER CENTER (INNOVA)",
+                "P_TOTAL": 5,
+                "H": 10,
+                "M": 3,
+                "IDS_P": [
+                    38,
+                    40,
+                    5,
+                    39,
+                    997
+                ]
+            },
+            {
+                "ID_SEDE": 4,
+                "NOMBRE": "AGRO STORAGE (AGRO CENTER)",
+                "P_TOTAL": 3,
+                "H": 6,
+                "M": 3,
+                "IDS_P": [
+                    4,
+                    996,
+                    995
+                ]
+            }
+        ]
+    },
+    {
+        "ID_ZONA": 3,
+        "ZONA": "COSTA ATLANTICA Y SANTANDER",
+        "SEDES": [
+            {
+                "ID_SEDE": 17,
+                "NOMBRE": "D.C BARRAQUILLA",
+                "P_TOTAL": 2,
+                "H": 3,
+                "M": 3,
+                "IDS_P": [
+                    138,
+                    140
+                ]
+            },
+            {
+                "ID_SEDE": 38,
+                "NOMBRE": "D.C BUCARAMANGA",
+                "P_TOTAL": 1,
+                "H": 2,
+                "M": 0,
+                "IDS_P": [
+                    125
+                ]
+            }
+        ]
+    },
+    {
+        "ID_ZONA": 2,
+        "ZONA": "ANTIOQUIA",
+        "SEDES": [
+            {
+                "ID_SEDE": 32,
+                "NOMBRE": "PLANTA ALIMENTOS ANTIOQUIA",
+                "P_TOTAL": 5,
+                "H": 8,
+                "M": 5,
+                "IDS_P": [
+                    36,
+                    37,
+                    46,
+                    52,
+                    50
+                ]
+            },
+            {
+                "ID_SEDE": 12,
+                "NOMBRE": "PLANTA SABANETA",
+                "P_TOTAL": 2,
+                "H": 6,
+                "M": 0,
+                "IDS_P": [
+                    12,
+                    994
+                ]
+            },
+            {
+                "ID_SEDE": 13,
+                "NOMBRE": "D.C ITAGUI",
+                "P_TOTAL": 2,
+                "H": 3,
+                "M": 3,
+                "IDS_P": [
+                    130,
+                    145
+                ]
+            }
+        ]
+    },
+    {
+        "ID_ZONA": 4,
+        "ZONA": "PACIFICO EJE CAFETERO - TOLIMA",
+        "SEDES": [
+            {
+                "ID_SEDE": 21,
+                "NOMBRE": "D. C CALI.",
+                "P_TOTAL": 1,
+                "H": 1,
+                "M": 2,
+                "IDS_P": [
+                    22
+                ]
+            },
+            {
+                "ID_SEDE": 26,
+                "NOMBRE": "PEC. IBAGUE",
+                "P_TOTAL": 1,
+                "H": 1,
+                "M": 2,
+                "IDS_P": [
+                    153
+                ]
+            },
+            {
+                "ID_SEDE": 22,
+                "NOMBRE": "PEC. PEREIRA.",
+                "P_TOTAL": 1,
+                "H": 2,
+                "M": 0,
+                "IDS_P": [
+                    122
+                ]
+            }
+        ]
+    }
+]

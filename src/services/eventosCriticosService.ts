@@ -56,6 +56,7 @@ export const eventosCriticosService = {
             AND YEAR(N.NO_FECHA_HORA) = ?
         ) as AÑO2_COUNT
       FROM PSC_SEDE S
+      WHERE S.SE_ACTIVO = 'SI'
       ORDER BY (AÑO1_COUNT + AÑO2_COUNT) DESC, S.SE_NOMBRE ASC
     `;
     

@@ -6,6 +6,7 @@ export async function GET() {
     const query = `
       SELECT CI_IDCIUDAD_PK as id, CI_NOMBRE as nombre 
       FROM PSC_CIUDAD 
+      WHERE CI_ACTIVO = 'SI'
       ORDER BY CI_NOMBRE ASC
     `;
     const [rows] = await db.execute(query);

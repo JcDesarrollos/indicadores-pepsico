@@ -37,4 +37,9 @@ export interface DashboardData {
   roleData: RoleDistribution[];
   modalityData: ModalityDistribution[];
   sitesDetail: SiteDetail[];
+  visitasStats: {
+    planeadas: number;
+    ejecutadas: number;
+    mensual: { mes_num: number, planeadas: number, ejecutadas: number }[];
+  }
 }

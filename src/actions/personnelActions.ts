@@ -36,9 +36,9 @@ export async function uploadPhoto(formData: FormData, oldPath?: string) {
     }
 }
 
-export async function updatePersonnel(id: number, data: { 
-    cargo?: string, 
-    idJefe?: number | null, 
+export async function updatePersonnel(id: number, data: {
+    cargo?: string,
+    idJefe?: number | null,
     foto?: string,
     genero?: string,
     activo?: string,
@@ -99,7 +99,7 @@ export async function updatePersonnel(id: number, data: {
         if (fields.length === 0) return { success: true };
 
         values.push(id);
-        
+
         await db.execute(
             `UPDATE PSC_PERSONAL SET ${fields.join(', ')} WHERE PR_IDPERSONAL_PK = ?`,
             values
@@ -145,11 +145,11 @@ export async function deletePersonnel(id: number) {
     }
 }
 
-export async function createPersonnel(data: { 
-    nombre: string, 
-    cargo: string, 
-    idJefe?: number | null, 
-    genero?: string, 
+export async function createPersonnel(data: {
+    nombre: string,
+    cargo: string,
+    idJefe?: number | null,
+    genero?: string,
     foto?: string,
     activo?: string,
     idCargo?: number,
@@ -162,9 +162,9 @@ export async function createPersonnel(data: {
             `INSERT INTO PSC_PERSONAL (PR_NOMBRE, PR_CARGO_LARGO, PR_IDJEFE_FK, PR_GENERO, CP_IDCARGO_FK, PR_FOTO_URL, PR_ACTIVO, SE_IDSEDE_FK, PU_IDPUESTO_FK, CI_IDCIUDAD_FK) 
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                data.nombre, 
-                data.cargo, 
-                data.idJefe || null, 
+                data.nombre,
+                data.cargo,
+                data.idJefe || null,
                 data.genero || 'HOMBRE',
                 data.idCargo || 2,
                 data.foto || null,
@@ -205,7 +205,13 @@ export async function getCargos() {
 
 export async function getSedes() {
     try {
-        const [rows] = await db.query('SELECT SE_IDSEDE_PK as id, SE_NOMBRE as nombre, CI_IDCIUDAD_FK as idZona FROM PSC_SEDE WHERE SE_ACTIVO = "SI" ORDER BY SE_NOMBRE ASC');
+        const [rows] = await db.query(`
+            SELECT S.SE_IDSEDE_PK as id, S.SE_NOMBRE as nombre, S.CI_IDCIUDAD_FK as idZona 
+            FROM PSC_SEDE S
+            JOIN PSC_CIUDAD C ON S.CI_IDCIUDAD_FK = C.CI_IDCIUDAD_PK
+            WHERE S.SE_ACTIVO = "SI" AND C.CI_ACTIVO = "SI"
+            ORDER BY S.SE_NOMBRE ASC
+        `);
         return rows as { id: number, nombre: string, idZona: number }[];
     } catch (error) {
         console.error('Error fetching sedes:', error);
@@ -215,7 +221,7 @@ export async function getSedes() {
 
 export async function getZonas() {
     try {
-        const [rows] = await db.query('SELECT CI_IDCIUDAD_PK as id, CI_NOMBRE as nombre FROM PSC_CIUDAD ORDER BY CI_NOMBRE ASC');
+        const [rows] = await db.query('SELECT CI_IDCIUDAD_PK as id, CI_NOMBRE as nombre FROM PSC_CIUDAD WHERE CI_ACTIVO = "SI" ORDER BY CI_NOMBRE ASC');
         return rows as { id: number, nombre: string }[];
     } catch (error) {
         console.error('Error fetching zonas:', error);
@@ -225,7 +231,14 @@ export async function getZonas() {
 
 export async function getPuestos() {
     try {
-        const [rows] = await db.query('SELECT PU_IDPUESTO_PK as id, PU_NOMBRE as nombre, SE_IDSEDE_FK as idSede FROM PSC_PUESTO WHERE PU_ACTIVO = "SI" ORDER BY PU_NOMBRE ASC');
+        const [rows] = await db.query(`
+            SELECT P.PU_IDPUESTO_PK as id, P.PU_NOMBRE as nombre, P.SE_IDSEDE_FK as idSede 
+            FROM PSC_PUESTO P
+            JOIN PSC_SEDE S ON P.SE_IDSEDE_FK = S.SE_IDSEDE_PK
+            JOIN PSC_CIUDAD C ON S.CI_IDCIUDAD_FK = C.CI_IDCIUDAD_PK
+            WHERE P.PU_ACTIVO = "SI" AND S.SE_ACTIVO = "SI" AND C.CI_ACTIVO = "SI"
+            ORDER BY P.PU_NOMBRE ASC
+        `);
         return rows as { id: number, nombre: string, idSede: number }[];
     } catch (error) {
         console.error('Error fetching puestos:', error);
