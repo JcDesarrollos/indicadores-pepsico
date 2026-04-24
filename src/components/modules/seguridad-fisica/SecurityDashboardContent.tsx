@@ -41,10 +41,7 @@ export default function SecurityDashboardContent({ data }: Props) {
             {/* 2. Presencia por Zona (Estirado hasta la base) */}
             <div className="flex-1">
               <ChartsGrid
-                genderData={data.genderData}
-                roleData={data.roleData}
-                modalityData={data.modalityData}
-                sitesDetail={data.sitesDetail}
+                {...data}
                 totalPersonnel={data.metrics.totalPersonnel}
                 renderOnly="secondary-left"
               />
@@ -56,10 +53,7 @@ export default function SecurityDashboardContent({ data }: Props) {
             {/* 3. Gráfico Principal */}
             <div className="h-[430px] shrink-0">
               <ChartsGrid
-                genderData={data.genderData}
-                roleData={data.roleData}
-                modalityData={data.modalityData}
-                sitesDetail={data.sitesDetail}
+                {...data}
                 totalPersonnel={data.metrics.totalPersonnel}
                 renderOnly="main"
               />
@@ -68,10 +62,7 @@ export default function SecurityDashboardContent({ data }: Props) {
             {/* 4. Género y Cargos */}
             <div className="flex-1">
               <ChartsGrid
-                genderData={data.genderData}
-                roleData={data.roleData}
-                modalityData={data.modalityData}
-                sitesDetail={data.sitesDetail}
+                {...data}
                 totalPersonnel={data.metrics.totalPersonnel}
                 renderOnly="secondary-bottom"
               />
