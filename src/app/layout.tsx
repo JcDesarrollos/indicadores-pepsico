@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description: "Módulo de gestión operativa e indicadores de seguridad PepsiCo",
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,6 +26,7 @@ export default function RootLayout({
     <html lang="es" className={cn("h-full antialiased", "font-sans", inter.variable)}>
       <body className="min-h-full flex flex-col font-sans">
         {children}
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );
