@@ -95,49 +95,38 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
         roots.push(orphans.shift()!);
     }
 
-    // Normalizar huérfanos integrándolos en la pirámide principal
+    // Normalizar huérfanos respetando la cadena de mando (Pirámide de Niveles)
     if (roots.length > 0) {
         const mainRoot = roots[0];
         const orphanSupervisors = orphans.filter(o => o.idCargo === 4);
         const orphanOperators = orphans.filter(o => o.idCargo === 3);
         const orphanGuards = orphans.filter(o => o.idCargo === 2);
 
-        // 1. Supervisores huérfanos -> Siempre bajo Admin
+        // 1. Supervisores huérfanos -> Nivel 1 (Bajo Admin)
         if (orphanSupervisors.length > 0) mainRoot.children!.push(...orphanSupervisors);
 
-        // 2. Operadores huérfanos -> Intentar colgar de un Supervisor Real
-        const anySupervisor = mainRoot.children?.find(c => c.idCargo === 4) || orphanSupervisors[0];
+        // 2. Operadores huérfanos -> Nivel 2 (vía Supervisor Fantasma)
         if (orphanOperators.length > 0) {
-            if (anySupervisor) {
-                anySupervisor.children!.push(...orphanOperators);
-            } else {
-                // Si no hay ningún supervisor, colgarlos del admin como L1
-                mainRoot.children!.push(...orphanOperators);
-            }
+            const ghostSup: PersonalNode = {
+                id: -999, nombre: 'SUPERVISIÓN OPERATIVA', cargo: 'PERSONAL SIN ASIGNACIÓN', genero: '',
+                idJefe: mainRoot.id, activo: 'SI', idCargo: 4, esFantasma: true, children: orphanOperators
+            };
+            mainRoot.children!.push(ghostSup);
         }
 
-        // 3. Guardas huérfanos -> Intentar colgar de un Operador Real
-        // Buscamos un operador en cualquier parte del nivel 2
-        let anyOperator: PersonalNode | undefined;
-        if (anySupervisor) {
-            anyOperator = anySupervisor.children?.find(c => c.idCargo === 3);
-        }
-
-        const limitedOrphanGuards = orphanGuards.slice(0, 10);
-        if (limitedOrphanGuards.length > 0) {
-            if (anyOperator) {
-                anyOperator.children!.push(...limitedOrphanGuards);
-            } else if (anySupervisor) {
-                // Si hay supervisor pero no operador, creamos el "Operador Fantasma" bajo ese supervisor
-                const ghostOp: PersonalNode = {
-                    id: -888, nombre: 'MEDIOS Y MONITOREO', cargo: 'OPERADOR GHOST', genero: '',
-                    idJefe: anySupervisor.id, activo: 'SI', idCargo: 3, esFantasma: true, children: limitedOrphanGuards
-                };
-                anySupervisor.children!.push(ghostOp);
-            } else {
-                // Último recurso: bajo el admin
-                mainRoot.children!.push(...limitedOrphanGuards);
-            }
+        // 3. Guardas huérfanos -> Nivel 3 (vía Sup Fantasma -> Op Fantasma)
+        if (orphanGuards.length > 0) {
+            const limitedOrphanGuards = orphanGuards.slice(0, 10);
+            const ghostSupForGuards: PersonalNode = {
+                id: -998, nombre: 'SUPERVISIÓN OPERATIVA', cargo: 'PERSONAL SIN ASIGNACIÓN', genero: '',
+                idJefe: mainRoot.id, activo: 'SI', idCargo: 4, esFantasma: true, children: []
+            };
+            const ghostOpForGuards: PersonalNode = {
+                id: -888, nombre: 'MEDIOS Y MONITOREO', cargo: 'OPERADORES GHOST', genero: '',
+                idJefe: -998, activo: 'SI', idCargo: 3, esFantasma: true, children: limitedOrphanGuards
+            };
+            ghostSupForGuards.children!.push(ghostOpForGuards);
+            mainRoot.children!.push(ghostSupForGuards);
         }
     }
 
