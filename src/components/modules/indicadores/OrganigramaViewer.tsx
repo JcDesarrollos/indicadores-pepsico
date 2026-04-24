@@ -7,11 +7,14 @@ import { PersonalNode } from '@/services/indicadoresService';
 import EditPersonnelModal from './EditPersonnelModal';
 import { Button } from '@/components/ui/button';
 
+import HCTable from './HCTable';
+
 interface Props {
   data: PersonalNode[];
+  stats: { cargo: string, total: number }[];
 }
 
-export default function OrganigramaViewer({ data }: Props) {
+export default function OrganigramaViewer({ data, stats }: Props) {
   const [scale, setScale] = useState(0.8);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [editingPerson, setEditingPerson] = useState<PersonalNode | null>(null);
@@ -127,6 +130,11 @@ export default function OrganigramaViewer({ data }: Props) {
             top: '60px'
           }}
         >
+          {/* Tabla HC GIGANTE pegada al lado izquierdo del Administrador */}
+          <div className="absolute -top-10 -left-[850px] z-50">
+             <HCTable stats={stats} />
+          </div>
+
           <div className="flex flex-row flex-nowrap items-start justify-center gap-x-12 pb-80">
             {data.map(root => (
               <OrganigramaNode

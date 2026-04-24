@@ -132,3 +132,18 @@ export async function getOrganigramaData(): Promise<PersonalNode[]> {
 
     return roots;
 }
+
+export async function getOrganigramaStats() {
+    const [rows] = await db.query<RowDataPacket[]>(`
+        SELECT 
+            CP.CP_NOMBRE as cargo,
+            COUNT(*) as total
+        FROM PSC_PERSONAL P
+        JOIN PSC_CARGO_PERSONAL CP ON P.CP_IDCARGO_FK = CP.CP_IDCARGO_PK
+        WHERE P.PR_ACTIVO = 'SI'
+        GROUP BY CP.CP_NOMBRE
+        ORDER BY total DESC
+    `);
+    
+    return rows as { cargo: string, total: number }[];
+}

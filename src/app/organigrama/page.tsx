@@ -1,4 +1,4 @@
-import { getOrganigramaData } from '@/services/indicadoresService';
+import { getOrganigramaData, getOrganigramaStats } from '@/services/indicadoresService';
 import OrganigramaViewer from '@/components/modules/indicadores/OrganigramaViewer';
 import { Network } from 'lucide-react';
 import ModuleLayout from '@/components/shared/ModuleLayout';
@@ -9,7 +9,10 @@ export const metadata = {
 };
 
 export default async function OrganigramaPage() {
-  const data = await getOrganigramaData();
+  const [data, stats] = await Promise.all([
+    getOrganigramaData(),
+    getOrganigramaStats()
+  ]);
 
   return (
     <>
@@ -26,7 +29,7 @@ export default async function OrganigramaPage() {
             </div>
           </header>
 
-          <OrganigramaViewer data={data} />
+          <OrganigramaViewer data={data} stats={stats} />
         </div>
       </ModuleLayout>
     </>
